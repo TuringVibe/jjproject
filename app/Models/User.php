@@ -62,4 +62,12 @@ class User extends Authenticatable
         'updated_by' => 'integer',
         'deleted_by' => 'integer'
     ];
+
+    public function projects() {
+        return $this->belongsToMany(Project::class,'project_users');
+    }
+
+    public function tasks() {
+        return $this->belongsToMany(Task::class,'task_assignees');
+    }
 }

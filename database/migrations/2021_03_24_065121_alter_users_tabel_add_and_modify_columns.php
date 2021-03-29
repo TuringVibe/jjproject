@@ -18,7 +18,7 @@ class AlterUsersTabelAddAndModifyColumns extends Migration
             $table->dropUnique('users_email_unique');
             $table->string('firstname',255)->after('id');
             $table->string('lastname',255)->nullable()->after('firstname');
-            $table->string('email',255)->unique()->change();
+            $table->string('email',255)->change();
             $table->enum('role',["user","admin"])->after('email_verified_at');
             $table->string('salt',10)->after('role');
             $table->string('password',255)->after('salt')->change();
