@@ -2,6 +2,13 @@
 
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectFileController;
+use App\Http\Controllers\ProjectLabelController;
+use App\Http\Controllers\MilestoneController;
+use App\Http\Controllers\SubtaskController;
+use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskFileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if(auth()->check())
-        return redirect(route("project.dashboard"));
+        return redirect(route("projects.dashboard"));
     return redirect(route("login"));
 });
 
@@ -35,11 +42,71 @@ Route::middleware(['guest'])->group(function() {
 
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthenticationController::class, "logout"])->name("logout");
-    Route::prefix('project')->name('project.')->group(function() {
+
+    Route::prefix('projects')->name('projects.')->group(function() {
         Route::get('/dashboard', [ProjectController::class, "dashboard"])->name('dashboard');
         Route::get('/list',[ProjectController::class, "list"])->name('list');
-        Route::get('/tasks',[])->name('tasks');
-        Route::get('/labels',[])->name('labels');
+        Route::get('/data',[ProjectController::class, "data"])->name('data');
+        Route::get('/edit',[ProjectController::class, "edit"])->name('edit');
+        Route::get('/detail',[ProjectController::class, "detail"])->name('detail');
+        Route::post('/save',[ProjectController::class, "save"])->name('save');
+        Route::post('/delete',[ProjectController::class, "delete"])->name('delete');
+        Route::get('/board',[ProjectController::class, "board"])->name('board');
+    });
+
+    Route::prefix('project-files')->name('project-files.')->group(function() {
+        Route::get('/data',[ProjectFileController::class, "data"])->name('data');
+        Route::post('/save',[ProjectFileController::class, "save"])->name('save');
+        Route::post('/delete',[ProjectFileController::class, "delete"])->name('delete');
+        Route::get('/download',[ProjectFileController::class, "download"])->name('download');
+    });
+
+    Route::prefix('project-milestones')->name('project-milestones.')->group(function () {
+        Route::get('/data',[MilestoneController::class, "data"])->name('data');
+        Route::get('/edit',[MilestoneController::class, "edit"])->name('edit');
+        Route::post('/save',[MilestoneController::class, "save"])->name('save');
+        Route::post('/delete',[MilestoneController::class, "delete"])->name('delete');
+    });
+
+    Route::prefix('tasks')->name('tasks.')->group(function() {
+        Route::get('/list',[TaskController::class, 'list'])->name('list');
+        Route::get('/data',[TaskController::class, 'data'])->name('data');
+        Route::get('/cards',[TaskController::class, 'cards'])->name('cards');
+        Route::get('/card',[TaskController::class, 'card'])->name('card');
+        Route::get('/edit',[TaskController::class, 'edit'])->name('edit');
+        Route::post('/save',[TaskController::class, 'save'])->name('save');
+        Route::post('/delete',[TaskController::class, 'delete'])->name('delete');
+        Route::post('/move',[TaskController::class, 'move'])->name('move');
+    });
+
+    Route::prefix('task-files')->name('task-files.')->group(function() {
+        Route::get('/data',[TaskFileController::class, "data"])->name('data');
+        Route::post('/save',[TaskFileController::class, "save"])->name('save');
+        Route::post('/delete',[TaskFileController::class, "delete"])->name('delete');
+        Route::get('/download',[TaskFileController::class, "download"])->name('download');
+    });
+
+    Route::prefix('task-comments')->name('task-comments.')->group(function() {
+        Route::get('/data',[TaskCommentController::class, "data"])->name('data');
+        Route::post('/save',[TaskCommentController::class, "save"])->name('save');
+        Route::post('/delete',[TaskCommentController::class, "delete"])->name('delete');
+        Route::get('/edit',[TaskCommentController::class, "edit"])->name('edit');
+    });
+
+    Route::prefix('subtasks')->name('subtasks.')->group(function() {
+        Route::get('/data',[SubtaskController::class, "data"])->name('data');
+        Route::post('/save',[SubtaskController::class, "save"])->name('save');
+        Route::post('/bulk-insert',[SubtaskController::class, "bulkInsert"])->name('bulk-insert');
+        Route::post('/delete',[SubtaskController::class, "delete"])->name('delete');
+        Route::get('/edit',[SubtaskController::class, "edit"])->name('edit');
+    });
+
+    Route::prefix('project-labels')->name('project-labels.')->group(function(){
+        Route::get('/list', [ProjectLabelController::class, "list"])->name('list');
+        Route::get('/data', [ProjectLabelController::class, "data"])->name('data');
+        Route::get('/detail', [ProjectLabelController::class, "detail"])->name('detail');
+        Route::post('/save', [ProjectLabelController::class, "save"])->name('save');
+        Route::post('/delete', [ProjectLabelController::class, "delete"])->name('delete');
     });
 
     Route::prefix('finance')->name('finance.')->group(function() {

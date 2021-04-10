@@ -13,8 +13,4 @@ class AuthenticationService {
         }
         return false;
     }
-
-    public function logout() {
-
-    }
 }

@@ -25,9 +25,19 @@
     <script src="{{asset('lib/jquery-3.6.0.min.js')}}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <script src="{{asset('lib/sweetalert2-10.15.7/sweetalert2.all.min.js')}}"></script>
+    <script src="{{asset('lib/jQuery-slimScroll-1.3.8/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{asset('js/general.js')}}"></script>
     @stack('scripts')
     <script>
         $(document).ready(function() {
+            $('.content').slimScroll({
+                height: 'auto',
+                width: '100%'
+            });
+            $('.custom-file-input').on('change', (e) => {
+                var fileName = e.target.files[0].name;
+                $(e.target).next('.custom-file-label').html(fileName);
+            });
             @stack('ready-scripts')
         });
     </script>

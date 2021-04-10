@@ -1,11 +1,10 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ValidateDataTable;
 use App\Http\Requests\ValidateUser;
 use App\Http\Requests\ValidateUserId;
+use App\Http\Requests\ValidateUserParams;
 use App\Services\UserService;
-use Illuminate\Http\Request;
 
 class UserController extends Controller {
     private $user_service;
@@ -17,6 +16,7 @@ class UserController extends Controller {
 
     public function list() {
         $this->config['title'] = "USER MANAGEMENT";
+        $this->config['active'] = "users.list";
         $this->config['navs'] = [
             [
                 'label' => 'User Management'
@@ -25,7 +25,7 @@ class UserController extends Controller {
         return view('pages.user-list', $this->config);
     }
 
-    public function data(Request $request) {
+    public function data(ValidateUserParams $request) {
         $params['name'] = $request->name;
         $params['role'] = $request->role;
         $result = $this->user_service->get($params);
@@ -40,7 +40,7 @@ class UserController extends Controller {
     public function save(ValidateUser $request) {
         $attr = $request->validated();
         if(isset($attr['img'])) {
-            $attr['img_path'] = $request->file('img')->store('users');
+            $attr['img_path'] = $request->file('img')->storePublicly('users');
         }
         if(array_key_exists('img',$attr)) unset($attr['img']);
         $result = $this->user_service->save($attr);

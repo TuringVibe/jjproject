@@ -1,5 +1,5 @@
 <nav class="header navbar">
-    <a href="{{route('project.dashboard')}}">JJ PROJECT</a>
+    <a href="{{route('projects.dashboard')}}">JJ PROJECT</a>
     @auth
     <form method="POST" action="{{route('logout')}}">
         @csrf

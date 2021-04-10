@@ -1,5 +1,6 @@
 .content {
-    padding: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     height: var(--container-height);
     overflow-y: auto;
 }

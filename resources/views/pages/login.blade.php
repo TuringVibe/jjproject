@@ -40,3 +40,9 @@
         </div>
     </div>
 @endsection
+
+@push('ready-scripts')
+    $('input.form-control').on('keyup',(e) => {
+        if(e.key === "Enter") $('form').submit();
+    });
+@endpush

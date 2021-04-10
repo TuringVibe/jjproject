@@ -39,11 +39,14 @@ class UserService {
                     $attr['password'] = Hash::make($user->salt.$attr['password']);
                 } else unset($attr['password']);
             }
+            $attr['updated_by'] = Auth::user()->id;
             $user->fill($attr);
             $user->save();
         } else {
             $attr['salt'] = Str::random(10);
             $attr['password'] = Hash::make($attr['salt'].$attr['password']);
+            $attr['created_by'] = Auth::user()->id;
+            $attr['updated_by'] = $attr['created_by'];
             $user = User::create($attr);
         }
         return $user;

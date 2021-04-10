@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="popup-user-form" method="POST" action="{{route("users.save")}}" enctype="multipart/form-data">
+                <form id="popup-user-form">
                     <input type="hidden" id="id" name="id">
                     <div class="form-row">
                         <div class="col-sm-6 form-group">
@@ -23,8 +23,7 @@
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
                             </select>
-                            <div id="validate-role" class="invalid-feedback">
-                            </div>
+                            <div id="validate-role" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -34,14 +33,12 @@
                             <small id="password-help-block" class="form-text text-muted">
                                 Leave it blank, unless if you want to update the password.
                             </small>
-                            <div id="validate-password" class="invalid-feedback">
-                            </div>
+                            <div id="validate-password" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-6 form-group">
                             <label for="password-confirmation">Confirm Password</label>
                             <input type="password" autocomplete="off" id="password-confirmation" name="password_confirmation" class="form-control" aria-describedby="validate-password_confirmation">
-                            <div id="validate-password-confirmation" class="invalid-feedback">
-                            </div>
+                            <div id="validate-password-confirmation" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -64,25 +61,22 @@
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input" id="img" name="img" aria-describedby="img-help-block validate-img">
                                 <label class="custom-file-label" for="img">Choose image file...</label>
+                                <div id="validate-img" class="invalid-feedback"></div>
                             </div>
                             <small id="img-help-block" class="form-text text-muted">
                                 Leave it blank, unless if you want to update the profile picture.
                             </small>
-                            <div id="validate-img" class="invalid-feedback">
-                            </div>
                         </div>
                         <div class="col form-group">
                             <label for="phone">Phone</label>
                             <input id="phone" name="phone" type="text" class="form-control" aria-describedby="validate-phone">
-                            <div id="validate-phone" class="invalid-feedback">
-                            </div>
+                            <div id="validate-phone" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="address">Address</label>
                         <textarea id="address" name="address" class="form-control" rows="2" aria-describedby="validate-address"></textarea>
-                        <div id="validate-address" class="invalid-feedback">
-                        </div>
+                        <div id="validate-address" class="invalid-feedback"></div>
                     </div>
                     <div class="form-row">
                         <div class="col-sm-6">
@@ -208,8 +202,6 @@ $('#popup-user').on('shown.bs.modal', popUpUserShown);
                 if(res) {
                     $modal.modal('hide');
                     document.querySelector('#list').dispatchEvent(new CustomEvent('mutated'));
-                } else {
-                    console.log(res);
                 }
             }).fail((jqXHR, textStatus, errorResponse) => {
                 if(jqXHR.status == 422) {
@@ -219,7 +211,6 @@ $('#popup-user').on('shown.bs.modal', popUpUserShown);
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 }
-                console.log('fail',jqXHR,textStatus,errorResponse);
             });
             e.preventDefault();
         });

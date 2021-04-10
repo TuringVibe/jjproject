@@ -33,6 +33,7 @@ html, body {
 h1, h2, h3, h4, h5 {
     padding: 0;
     margin: 0;
+    font-weight: bold;
 }
 
 a {
@@ -46,13 +47,21 @@ a:hover {
     color: var(--color-link);
 }
 
-button.btn.btn-default {
+button.btn {
     border: none;
     padding: 10px;
     border-radius: 5px;
+    font-weight: bold;
+}
+
+button.btn.btn-default {
     background-color: var(--com-bg-color-default);
     color: var(--com-color-default);
-    font-weight: bold;
+}
+
+button.btn.btn-negative {
+    background-color: var(--com-color-default);
+    color: var(--com-bg-color-default);
 }
 
 .header.navbar {

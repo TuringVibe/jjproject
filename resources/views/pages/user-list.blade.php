@@ -9,7 +9,7 @@
     <div class="content container-fluid">
         @include('components.content-header',[
                 'with_btn' => true,
-                'btn_label' => 'Create Users',
+                'btn_label' => 'Create User',
                 'action' => 'openModal()'
             ]
         )
@@ -30,7 +30,7 @@
                         <input type="text" id="filter-name" class="form-control">
                     </div>
                     <div class="col-auto form-group align-self-end">
-                        <button id="filter-button" class="btn btn-default" type="button" onclick="document.querySelector('#list').dispatchEvent(new CustomEvent('mutated'))">Filter</button>
+                        <button id="filter-button" class="btn btn-default" type="button">Filter</button>
                     </div>
                 </div>
                 <table id="list" class="table table-striped table-bordered">
@@ -106,7 +106,14 @@
 @endpush
 
 @push('ready-scripts')
+    $('#filter-button').on('click',(e) => {
+        document.querySelector('#list').dispatchEvent(new CustomEvent('mutated'));
+    });
+    $('#filter-name').on('keyup',(e) => {
+        if(e.key === "Enter") $('#filter-button').click();
+    });
     var table = $('#list').DataTable({
+        order: [],
         paging: false,
         searching: false,
         processing: true,
