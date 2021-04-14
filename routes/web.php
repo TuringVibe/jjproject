@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\FinanceLabelController;
+use App\Http\Controllers\FinanceMutationController;
+use App\Http\Controllers\FinanceMutationScheduleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\ProjectLabelController;
@@ -109,10 +112,28 @@ Route::middleware(['auth'])->group(function() {
         Route::post('/delete', [ProjectLabelController::class, "delete"])->name('delete');
     });
 
-    Route::prefix('finance')->name('finance.')->group(function() {
-        Route::get('/dashboard', [])->name('dashboard');
-        Route::get('/mutations',[])->name('mutations');
-        Route::get('/labels',[])->name('labels');
+    Route::get('finance-dashboard',[])->name('finance-dashboard');
+
+    Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {
+        Route::get('/list',[FinanceMutationController::class, "list"])->name('list');
+        Route::get('/data',[FinanceMutationController::class, "data"])->name('data');
+        Route::get('/edit',[FinanceMutationController::class, "edit"])->name('edit');
+        Route::post('/save',[FinanceMutationController::class, "save"])->name('save');
+        Route::post('/delete',[FinanceMutationController::class, "delete"])->name('delete');
+        Route::prefix('/scheduled')->name('scheduled.')->group(function() {
+            Route::get('/data',[FinanceMutationScheduleController::class, "data"])->name('data');
+            Route::get('/edit',[FinanceMutationScheduleController::class, "edit"])->name('edit');
+            Route::post('/save',[FinanceMutationScheduleController::class, "save"])->name('save');
+            Route::post('/delete',[FinanceMutationScheduleController::class, "delete"])->name('delete');
+        });
+    });
+
+    Route::prefix('finance-labels')->name('finance-labels.')->group(function() {
+        Route::get('/list',[FinanceLabelController::class, "list"])->name('list');
+        Route::get('/data',[FinanceLabelController::class, "data"])->name('data');
+        Route::get('/detail',[FinanceLabelController::class, "detail"])->name('detail');
+        Route::post('/save',[FinanceLabelController::class, "save"])->name('save');
+        Route::post('/delete',[FinanceLabelController::class, "delete"])->name('delete');
     });
 
     Route::prefix('users')->name('users.')->group(function() {

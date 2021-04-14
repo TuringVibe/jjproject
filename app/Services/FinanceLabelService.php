@@ -1,14 +1,14 @@
 <?php
 namespace App\Services;
 
-use App\Models\ProjectLabel;
+use App\Models\FinanceLabel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class ProjectLabelService {
+class FinanceLabelService {
 
     public function get($params = []) {
-        $query_builder = ProjectLabel::whereNull('deleted_at');
+        $query_builder = FinanceLabel::whereNull('deleted_at');
         foreach($params as $field => $val) {
             if(isset($val)) {
                 if($field == 'name') {
@@ -18,38 +18,38 @@ class ProjectLabelService {
                 }
             }
         }
-        $project_labels = $query_builder->orderBy('created_at','desc')
+        $finance_labels = $query_builder->orderBy('created_at','desc')
             ->select('id','name','color')
-            ->withCount('projects')
+            ->withCount('mutations')
             ->get()->toArray();
 
-        return $project_labels;
+        return $finance_labels;
     }
 
     public function detail($id) {
-        $project_label = ProjectLabel::find($id);
-        return $project_label;
+        $finance_label = FinanceLabel::find($id);
+        return $finance_label;
     }
 
     public function save($attr) {
         if(isset($attr['id'])) {
-            $project_label = ProjectLabel::find($attr['id']);
+            $finance_label = FinanceLabel::find($attr['id']);
             $attr['updated_by'] = Auth::user()->id;
-            $project_label->fill($attr);
-            $project_label->save();
+            $finance_label->fill($attr);
+            $finance_label->save();
         } else {
             $attr['created_by'] = Auth::user()->id;
             $attr['updated_by'] = $attr['created_by'];
-            $project_label = ProjectLabel::create($attr);
+            $finance_label = FinanceLabel::create($attr);
         }
-        return $project_label;
+        return $finance_label;
     }
 
     public function delete($id) {
-        $project_label = ProjectLabel::find($id);
-        $project_label->deleted_by = Auth::user()->id;
-        $project_label->deleted_at = Carbon::now();
-        return $project_label->save();
+        $finance_label = FinanceLabel::find($id);
+        $finance_label->deleted_by = Auth::user()->id;
+        $finance_label->deleted_at = Carbon::now();
+        return $finance_label->save();
     }
 
 }

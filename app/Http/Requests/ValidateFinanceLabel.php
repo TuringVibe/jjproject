@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Models\ProjectLabel;
+use App\Models\FinanceLabel;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ValidateProjectLabel extends FormRequest
+class ValidateFinanceLabel extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,12 +34,12 @@ class ValidateProjectLabel extends FormRequest
     public function rules()
     {
         return [
-            'id' => ['nullable', 'integer', Rule::exists(ProjectLabel::class,'id')->where(function($query){
+            'id' => ['nullable', 'integer', Rule::exists(FinanceLabel::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
-            'name' => ['required', 'string', 'max:100', Rule::unique(ProjectLabel::class, 'name')->where(function($query){
+            'name' => ['required', 'string', 'max:100', Rule::unique(FinanceLabel::class, 'name')->where(function($query){
                 return $query->whereNull('deleted_at');
-            })->ignore(ProjectLabel::find($this->id))],
+            })->ignore(FinanceLabel::find($this->id))],
             'color' => ['required','string', 'size:7', 'starts_with:#']
         ];
     }

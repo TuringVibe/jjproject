@@ -27,6 +27,12 @@ class TaskService {
                     case 'name':
                         $query_builder->where($field,'like',"%{$val}%");
                     break;
+                    case 'due_date_from':
+                        $query_builder->where('due_date','>=',$val);
+                    break;
+                    case 'due_date_to':
+                        $query_builder->where('due_date','<=',$val);
+                    break;
                     case 'user_id':
                         $query_builder->whereHas('users',function(Builder $query) use($val){
                             $query->where('users.id',$val);

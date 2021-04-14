@@ -9,9 +9,9 @@
     @if(Auth::user()->role == "admin")
     <h5 class="sidebar-heading">FINANCE</h5>
     <ul class="nav flex-column">
-        <li class="nav-item"><a class="nav-link {{$active == "finance.dashboard" ? "active" : ""}}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link {{$active == "finance.list" ? "active" : ""}}"><i class="fas fa-balance-scale"></i> Mutations</a></li>
-        <li class="nav-item"><a class="nav-link {{$active == "finance.labels" ? "active" : ""}}"><i class="fas fa-tags"></i> Labels</a></li>
+        <li class="nav-item"><a class="nav-link {{$active == "finance-dashboard" ? "active" : ""}}" href="{{route('finance-dashboard')}}"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link {{$active == "finance-mutations.list" ? "active" : ""}}" href="{{route('finance-mutations.list')}}"><i class="fas fa-balance-scale"></i> Mutations</a></li>
+        <li class="nav-item"><a class="nav-link {{$active == "finance-labels.list" ? "active" : ""}}" href="{{route('finance-labels.list')}}"><i class="fas fa-tags"></i> Labels</a></li>
     </ul>
     <h5 class="sidebar-heading">USER MANAGEMENT</h5>
     <ul class="nav flex-column">

@@ -6,7 +6,6 @@ use App\Http\Requests\ValidateProjectLabel;
 use App\Http\Requests\ValidateProjectLabelId;
 use App\Http\Requests\ValidateProjectLabelParams;
 use App\Services\ProjectLabelService;
-use Illuminate\Http\Request;
 
 class ProjectLabelController extends Controller
 {
