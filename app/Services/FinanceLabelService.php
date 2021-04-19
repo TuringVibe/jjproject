@@ -7,6 +7,36 @@ use Illuminate\Support\Facades\Auth;
 
 class FinanceLabelService {
 
+    public function statistic($currency, $params = []) {
+        if(!in_array($currency,['usd','cny','idr'])) $currency = 'usd';
+        $query_builder = FinanceLabel::whereNull('deleted_at');
+        foreach($params as $key => $val) {
+            if(isset($val)) {
+                switch($key) {
+                    case 'name':
+                        $query_builder->where('name','like',"%{$val}%");
+                    break;
+                    default:
+                        $query_builder->where($key,$val);
+                    break;
+                }
+            }
+        }
+        $data = [];
+        foreach($query_builder->cursor() as $label) {
+            $debit = $label->mutations()->totalDebit($currency);
+            $credit = $label->mutations()->totalCredit($currency);
+            $data[] = [
+                'label' => $label,
+                'currency' => $currency,
+                'debit' => $debit,
+                'credit' => $credit,
+                'total' => $debit+$credit
+            ];
+        }
+        return $data;
+    }
+
     public function get($params = []) {
         $query_builder = FinanceLabel::whereNull('deleted_at');
         foreach($params as $field => $val) {

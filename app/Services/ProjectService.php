@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectService {
 
+    public function statistic() {
+        return [
+            'total' => Project::count(),
+            'notstarted' => Project::notStarted()->count(),
+            'ongoing' => Project::onGoing()->count(),
+            'complete' => Project::complete()->count(),
+            'onhold' => Project::onHold()->count(),
+            'canceled' => Project::canceled()->count(),
+        ];
+    }
+
     public function get($params = []) {
         $query_builder = Project::with(['users:id,firstname,lastname,img_path','labels'])->whereNull('deleted_at');
         foreach($params as $field => $val) {

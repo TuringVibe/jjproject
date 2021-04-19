@@ -26,18 +26,6 @@ class ProjectController extends Controller
         $this->task_service = $task_service;
     }
 
-    public function dashboard()
-    {
-        $this->config['title'] = "PROJECT DASHBOARD";
-        $this->config['active'] = "projects.dashboard";
-        $this->config['navs'] = [
-            [
-                'label' => 'Project Dashboard'
-            ]
-        ];
-        return view('pages.project-dashboard', $this->config);
-    }
-
     public function list()
     {
         $this->config['title'] = "PROJECTS";

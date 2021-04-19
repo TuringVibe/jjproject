@@ -28,7 +28,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col-sm-4 form-group">
+                        <div class="col-sm-3 form-group">
                             <label for="mode">Mode</label>
                             <select id="mode" class="form-control" name="mode" aria-describedby="validate-mode">
                                 <option value="debit">Debit</option>
@@ -36,15 +36,19 @@
                             </select>
                             <div id="validate-mode" class="invalid-feedback"></div>
                         </div>
+                        <div class="col-sm-3 form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency" name="currency" class="form-control" aria-describedby="validate-currency">
+                                <option value="usd">USD</option>
+                                <option value="cny">CNY</option>
+                                <option value="idr">IDR</option>
+                            </select>
+                            <div id="validate-currency" class="invalid-feedback"></div>
+                        </div>
                         <div class="col-sm-8 form-group">
                             <label for="nominal">Nominal</label>
-                            <div class="input-group">
-                                <span class="input-group-append">
-                                    <span class="input-group-text">USD</span>
-                                </span>
-                                <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
-                                <div id="validate-nominal" class="invalid-feedback"></div>
-                            </div>
+                            <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
+                            <div id="validate-nominal" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -100,6 +104,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
         $modal.find('#mutation-date').val(null);
         $modal.find('#name').val(null);
         $modal.find('#mode').val(null);
+        $modal.find('#currency').val(null);
         $modal.find('#nominal').val(null);
         $modal.find('#finance-label-ids').val([]).trigger('change');
         $modal.find('#project-id').val(null).trigger('change');
@@ -112,6 +117,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
         var $modal = $(this);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-finance-mutation-title').text('Create Finance Mutation');
+        $modal.find('#mutation-date').val(moment().format('YYYY-MM-DD'));
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
             $modal.find('small.form-text.text-muted').show();
@@ -133,9 +139,19 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
         }
     }
 
+    function loading() {
+        var html = '<div class="spinner-border mr-3" role="status">'+
+            '<span class="sr-only">Loading...</span>'+
+        '</div>';
+        return html;
+    }
+
     function popUpFinanceMutationShown(e) {
         var $modal = $(this);
         $modal.find('#popup-finance-mutation-form').on('submit', (e) => {
+            $loading = $(loading());
+            $modal.find('.modal-footer').prepend($loading);
+            $modal.find('button').prop("disabled",true);
             var formData = new FormData(e.target);
             $.ajax({
                 method: 'POST',
@@ -180,6 +196,9 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
                         icon: 'error'
                     });
                 }
+            }).always(() => {
+                $loading.remove();
+                $modal.find('button').prop("disabled",false);
             });
             e.preventDefault();
         });

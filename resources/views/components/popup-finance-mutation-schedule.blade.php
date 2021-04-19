@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="col-sm-4 form-group">
+                        <div class="col-sm-3 form-group">
                             <label for="mode">Mode</label>
                             <select id="mode" class="form-control" name="mode" aria-describedby="validate-mode">
                                 <option value="debit">Debit</option>
@@ -46,15 +46,15 @@
                             </select>
                             <div id="validate-mode" class="invalid-feedback"></div>
                         </div>
-                        <div class="col-sm-8 form-group">
+                        <div class="col-sm-3 form-group">
+                            <label for="currency">Currency</label>
+                            <input type="text" name="currency" id="currency" class="form-control" aria-describedby="validate-currency">
+                            <div id="validate-currency" class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-sm-6 form-group">
                             <label for="nominal">Nominal</label>
-                            <div class="input-group">
-                                <span class="input-group-append">
-                                    <span class="input-group-text">USD</span>
-                                </span>
-                                <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
-                                <div id="validate-nominal" class="invalid-feedback"></div>
-                            </div>
+                            <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
+                            <div id="validate-nominal" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
@@ -112,6 +112,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
         $modal.find('#name').val(null);
         $modal.find('#mode').val(null);
         $modal.find('#nominal').val(null);
+        $modal.find('#currency').val(null);
         $modal.find('#attached-label-ids').val([]).trigger('change');
         $modal.find('#project-id').val(null).trigger('change');
         $modal.find('#notes').val(null);
@@ -123,6 +124,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
         var $modal = $(this);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-finance-mutation-schedule-title').text('Add Mutation Schedule');
+        $modal.find('#next-mutation-date').val(moment().add(1,'d').format('YYYY-MM-DD'));
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
             $modal.find('small.form-text.text-muted').show();
@@ -131,6 +133,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
                 $modal.find('#id').val(res.id);
                 $modal.find('#next-mutation-date').val(res.next_mutation_date);
                 $modal.find('#repeat').val(res.repeat);
+                $modal.find('#currency').val(res.currency);
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
                 $modal.find('#nominal').val(res.nominal);

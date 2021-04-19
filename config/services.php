@@ -30,4 +30,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'currconv' => [
+        'domain' => env('API_CURRENCY_CONVERSION_DOMAIN'),
+        'key' => env('API_CURRENCY_CONVERSION_KEY')
+    ]
+
 ];

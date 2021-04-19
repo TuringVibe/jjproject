@@ -25,6 +25,7 @@ class ValidateFinanceMutationSchedule extends FormRequest
             'id' => $this->id == null ? null : trim(strip_tags($this->id)),
             'next_mutation_date' => trim(strip_tags($this->next_mutation_date)),
             'name' => trim(strip_tags($this->name)),
+            'currency' => trim(strip_tags($this->currency)),
             'nominal' => trim(strip_tags($this->nominal)),
             'mode' => trim(strip_tags($this->mode)),
             'project_id' => $this->project_id == null ? null : trim(strip_tags($this->project_id)),
@@ -47,6 +48,7 @@ class ValidateFinanceMutationSchedule extends FormRequest
             })],
             'next_mutation_date' => ['required','date','after:today'],
             'name' => ['required','string','max:100'],
+            'currency' => ['required','in:usd,cny,idr'],
             'nominal' => ['required','integer'],
             'mode' => ['required','in:debit,credit'],
             'project_id' => ['nullable','integer',Rule::exists(Project::class,'id')->where(function($query){

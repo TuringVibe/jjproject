@@ -1,7 +1,6 @@
 <?php
 namespace App\Services;
 
-use App\Models\FinanceMutation;
 use App\Models\FinanceMutationSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -36,39 +35,38 @@ class FinanceMutationScheduleService {
     }
 
     public function runTodaySchedule() {
-        $now = Carbon::now()->addDay(1);
+        $now = Carbon::now();
         $finance_mutation_schedules = FinanceMutationSchedule::whereNull('deleted_at')
             ->where('next_mutation_date',$now->toDateString());
         if(!$finance_mutation_schedules->exists()) return;
         try{
-            DB::transaction(function () use($finance_mutation_schedules){
+            DB::transaction(function () use(&$finance_mutation_schedules){
                 foreach($finance_mutation_schedules->cursor() as $finance_mutation_schedule) {
-                    $finance_mutation = FinanceMutation::create([
+                    (new FinanceMutationService())->save([
                         'mutation_date' => $finance_mutation_schedule->next_mutation_date,
                         'name' => $finance_mutation_schedule->name,
+                        'currency' => $finance_mutation_schedule->currency,
                         'nominal' => $finance_mutation_schedule->nominal,
                         'mode' => $finance_mutation_schedule->mode,
                         'project_id' => $finance_mutation_schedule->project_id,
                         'notes' => $finance_mutation_schedule->notes,
+                        'finance_label_ids' => $finance_mutation_schedule->attached_label_ids,
                         'created_by' => 0,
                         'updated_by' => 0
                     ]);
-                    if(!empty($finance_mutation_schedule->attached_label_ids)) {
-                        $finance_mutation->labels()->attach($finance_mutation_schedule->attached_label_ids);
-                    }
 
                     switch($finance_mutation_schedule->repeat) {
                         case 'daily':
-                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addDay(1);
+                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addDay();
                         break;
                         case 'weekly':
-                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addWeek(1);
+                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addWeek();
                         break;
                         case 'monthly':
-                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addMonth(1);
+                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addMonth();
                         break;
                         case 'yearly':
-                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addYear(1);
+                            $finance_mutation_schedule->next_mutation_date = Carbon::parse($finance_mutation_schedule->next_mutation_date)->addYear();
                         break;
                     }
                     $finance_mutation_schedule->updated_by = 0;

@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\FinanceDashboardController;
 use App\Http\Controllers\FinanceLabelController;
 use App\Http\Controllers\FinanceMutationController;
 use App\Http\Controllers\FinanceMutationScheduleController;
@@ -8,6 +11,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectFileController;
 use App\Http\Controllers\ProjectLabelController;
 use App\Http\Controllers\MilestoneController;
+use App\Http\Controllers\ProjectDashboardController;
 use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
@@ -28,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if(auth()->check())
-        return redirect(route("projects.dashboard"));
+        return redirect(route("project-dashboard.dashboard"));
     return redirect(route("login"));
 });
 
@@ -46,8 +50,19 @@ Route::middleware(['guest'])->group(function() {
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthenticationController::class, "logout"])->name("logout");
 
+    Route::prefix('calendar')->name('events.')->group(function() {
+        Route::get('/', [EventController::class, "list"])->name("list");
+        Route::get('/data', [EventController::class, "data"])->name("data");
+        Route::get('/edit', [EventController::class, "edit"])->name("edit");
+        Route::post('/save', [EventController::class, "save"])->name("save");
+        Route::post('/delete', [EventController::class, "delete"])->name("delete");
+    });
+
+    Route::prefix('project-dashboard')->name('project-dashboard.')->group(function(){
+        Route::get('/', [ProjectDashboardController::class, "dashboard"])->name('dashboard');
+    });
+
     Route::prefix('projects')->name('projects.')->group(function() {
-        Route::get('/dashboard', [ProjectController::class, "dashboard"])->name('dashboard');
         Route::get('/list',[ProjectController::class, "list"])->name('list');
         Route::get('/data',[ProjectController::class, "data"])->name('data');
         Route::get('/edit',[ProjectController::class, "edit"])->name('edit');
@@ -112,7 +127,11 @@ Route::middleware(['auth'])->group(function() {
         Route::post('/delete', [ProjectLabelController::class, "delete"])->name('delete');
     });
 
-    Route::get('finance-dashboard',[])->name('finance-dashboard');
+    Route::prefix('finance-dashboard')->name('finance-dashboard.')->group(function() {
+        Route::get('/',[FinanceDashboardController::class, 'dashboard'])->name('dashboard');
+        Route::get('/data-by-label', [FinanceDashboardController::class, "dataByLabel"])->name('data-by-label');
+        Route::get('/periodic-statistic', [FinanceDashboardController::class, "periodicStatistic"])->name('periodic-statistic');
+    });
 
     Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {
         Route::get('/list',[FinanceMutationController::class, "list"])->name('list');

@@ -47,6 +47,7 @@
                                     <th>Next Date</th>
                                     <th>Name</th>
                                     <th>Mode</th>
+                                    <th>Currency</th>
                                     <th>Nominal</th>
                                     <th>Repeat</th>
                                     <th>Action</th>
@@ -105,13 +106,21 @@
                         <table id="list" class="table table-striped table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Debit</th>
-                                    <th>Kredit</th>
-                                    <th>Label</th>
-                                    <th>Project</th>
-                                    <th>Action</th>
+                                    <th rowspan="2">Date</th>
+                                    <th rowspan="2">Name</th>
+                                    <th colspan="3">Debit</th>
+                                    <th colspan="3">Kredit</th>
+                                    <th rowspan="2">Label</th>
+                                    <th rowspan="2">Project</th>
+                                    <th rowspan="2">Action</th>
+                                </tr>
+                                <tr>
+                                    <th>USD</th>
+                                    <th>CNY</th>
+                                    <th>IDR</th>
+                                    <th>USD</th>
+                                    <th>CNY</th>
+                                    <th>IDR</th>
                                 </tr>
                             </thead>
                         </table>
@@ -295,10 +304,16 @@
             {data: 'next_mutation_date'},
             {data: 'name'},
             {data: 'mode'},
+            {data: 'currency'},
             {
                 data: 'nominal',
                 render: (data, type, row, meta) => {
-                    return "USD "+new Intl.NumberFormat().format(new Number(row.nominal).toFixed(1));
+                    var currencies = {
+                        'usd': '&#36;',
+                        'cny': '&yen;',
+                        'idr': 'Rp'
+                    };
+                    return currencies[row.currency]+" "+new Intl.NumberFormat().format(new Number(data).toFixed(1));
                 }
             },
             {data: 'repeat'},
@@ -345,16 +360,44 @@
             {data: 'mutation_date'},
             {data: 'name'},
             {
-                data: null,
+                data: 'usd',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'debit') return "USD "+new Intl.NumberFormat().format(new Number(row.nominal).toFixed(1));
+                    if(row.mode == 'debit') return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
                     else return "";
                 }
             },
             {
-                data: null,
+                data: 'cny',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'credit') return "USD "+new Intl.NumberFormat().format(new Number(row.nominal*-1).toFixed(1));
+                    if(row.mode == 'debit') return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    else return "";
+                }
+            },
+            {
+                data: 'idr',
+                render: (data,type,row,meta) => {
+                    if(row.mode == 'debit') return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    else return "";
+                }
+            },
+            {
+                data: 'usd',
+                render: (data,type,row,meta) => {
+                    if(row.mode == 'credit') return "&#36; "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
+                    else return "";
+                }
+            },
+            {
+                data: 'cny',
+                render: (data,type,row,meta) => {
+                    if(row.mode == 'credit') return "&yen; "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
+                    else return "";
+                }
+            },
+            {
+                data: 'idr',
+                render: (data,type,row,meta) => {
+                    if(row.mode == 'credit') return "Rp "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
                     else return "";
                 }
             },

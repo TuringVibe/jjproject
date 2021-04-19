@@ -52,4 +52,24 @@ class Project extends Model
     public function milestones() {
         return $this->hasMany(Milestone::class);
     }
+
+    public function scopeNotStarted($query) {
+        return $query->whereNull('deleted_at')->where('status','notstarted');
+    }
+
+    public function scopeOnGoing($query) {
+        return $query->whereNull('deleted_at')->where('status','ongoing');
+    }
+
+    public function scopeComplete($query) {
+        return $query->whereNull('deleted_at')->where('status','complete');
+    }
+
+    public function scopeOnHold($query) {
+        return $query->whereNull('deleted_at')->where('status','onhold');
+    }
+
+    public function scopeCanceled($query) {
+        return $query->whereNull('deleted_at')->where('status','canceled');
+    }
 }

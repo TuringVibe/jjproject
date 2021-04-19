@@ -33,7 +33,7 @@ class FinanceMutationController extends Controller
 
     public function data(ValidateFinanceMutationParams $request) {
         $result = $this->finance_mutation_service->get($request->validated());
-        echo json_encode($result->toArray());
+        echo json_encode($result);
     }
 
     public function edit(ValidateFinanceMutationId $request) {

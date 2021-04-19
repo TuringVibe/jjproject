@@ -191,6 +191,8 @@
 
     $('input#filter-duedate-range').daterangepicker({
         autoUpdateInput: false,
+        applyClass: "btn-default",
+        cancelClass: "btn-secondary",
         locale: {
             cancelLabel: 'Clear'
         },

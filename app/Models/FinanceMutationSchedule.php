@@ -13,6 +13,7 @@ class FinanceMutationSchedule extends Model
     protected $fillable = [
         'next_mutation_date',
         'name',
+        'currency',
         'nominal',
         'mode',
         'project_id',
@@ -26,7 +27,7 @@ class FinanceMutationSchedule extends Model
     ];
     protected $casts = [
         'next_mutation_date' => 'datetime:Y-m-d',
-        'nominal' => 'integer',
+        'nominal' => 'float',
         'project_id' => 'integer',
         'attached_label_ids' => 'array',
         'created_by' => 'integer',

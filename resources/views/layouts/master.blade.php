@@ -30,15 +30,15 @@
     @stack('scripts')
     <script>
         $(document).ready(function() {
-            $('.content').slimScroll({
-                height: 'auto',
-                width: '100%'
-            });
             $('.custom-file-input').on('change', (e) => {
                 var fileName = e.target.files[0].name;
                 $(e.target).next('.custom-file-label').html(fileName);
             });
             @stack('ready-scripts')
+            $('.content').slimScroll({
+                height: 'auto',
+                width: '100%'
+            });
         });
     </script>
     <script>
