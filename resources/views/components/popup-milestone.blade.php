@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="create-project-label-title">Create Milestone</h5>
+                <h5 class="modal-title" id="create-milestone-title">Create Milestone</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -72,7 +72,7 @@ $('#popup-milestone').on('shown.bs.modal', popUpMilestoneShown);
         var $modal = $(this);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-milestone-title').text('Create Milestone');
-        $modal.find('#project_id').val(getQueryVariable('project_id'));
+        $modal.find('#project_id').val(getQueryVariable('id'));
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
             $modal.find('small.form-text.text-muted').show();
@@ -101,17 +101,45 @@ $('#popup-milestone').on('shown.bs.modal', popUpMilestoneShown);
                 processData: false,
                 contentType: false
             }).done((res) => {
-                if(res) {
+                if(res.status) {
+                    Swal.fire(
+                        'Success!',
+                        res.message,
+                        'success'
+                    )
                     $modal.modal('hide');
                     document.querySelector('#milestones').dispatchEvent(new CustomEvent('mutated'));
                 }
             }).fail((jqXHR, textStatus, errorResponse) => {
-                if(jqXHR.status == 422) {
-                    var errors = jqXHR.responseJSON.errors;
-                    for(error in errors) {
-                        $('#validate-'+error).text(errors[error]);
-                        $('[name='+error+']').addClass('is-invalid');
-                    }
+                var response = jqXHR.responseJSON;
+                switch(jqXHR.status) {
+                    case 422:
+                        var errors = response.errors;
+                        for(error in errors) {
+                            $('#validate-'+error).text(errors[error]);
+                            $('[name='+error+']').addClass('is-invalid');
+                        }
+                    break;
+                    case 403:
+                        var title = 'Not Authorized';
+                        var message = response.message;
+                        Swal.fire(
+                            title,
+                            message,
+                            'error'
+                        )
+                        $modal.modal('hide');
+                    break;
+                    case 500:
+                        var title = 'Server Error';
+                        var message = response.message ?? @json(__('response.server_error'));
+                        Swal.fire(
+                            title,
+                            message,
+                            'error'
+                        );
+                        $modal.modal('hide');
+                    break;
                 }
             });
             e.preventDefault();

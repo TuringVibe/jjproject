@@ -132,7 +132,7 @@ $('.date-picker').daterangepicker({
             var id = $origin.data('id');
             $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-project-title').text('Update Project');
-            $.get('{{route("projects.edit")}}',{project_id: id}).done((res) => {
+            $.get('{{route("projects.edit")}}',{id: id}).done((res) => {
                 $modal.find('#id').val(res.id);
                 $modal.find('#name').val(res.name);
                 $modal.find('#status').val(res.status);

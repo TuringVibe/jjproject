@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class TaskFileService {
 
+    public function getTask($file_id) {
+        $task = File::find($file_id)->task[0];
+        return $task;
+    }
+
     public function get($task_id) {
         $files = Task::find($task_id)->files()
             ->whereNull('files.deleted_at')
@@ -30,15 +35,19 @@ class TaskFileService {
         try{
             $file = null;
             DB::transaction(function () use(&$file, $task_id, $uploaded_file){
+                $logged_in_user_id = Auth::user()->id;
                 $task = Task::find($task_id);
                 $file_path = $uploaded_file->store('tasks');
                 $filename = $uploaded_file->getClientOriginalName();
                 $ext = $uploaded_file->extension();
                 $size = Storage::size($file_path);
-                $created_by = Auth::user()->id;
-                $updated_by = $created_by;
-                $file = new File(compact("filename","file_path","ext","size","created_by","updated_by"));
-                $task->files()->save($file);
+                $created_by = $logged_in_user_id;
+                $updated_by = $logged_in_user_id;
+                $file = File::create(compact("filename","file_path","ext","size","created_by","updated_by"));
+                $task->files()->attach($file->id, [
+                    'updated_by' => $logged_in_user_id,
+                    'created_by' => $logged_in_user_id
+                ]);
             });
             return $file;
         } catch(\Exception $e) {

@@ -190,7 +190,7 @@
         .placeholder {
             margin-top: .5rem;
             height: 100px;
-            background-color: yellow;
+            background-color: #8F9B8E;
             border-radius: 5px;
         }
     </style>
@@ -249,24 +249,31 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         }
                     }).done((res) => {
-                        if (res == true) {
+                        if (res.status == true) {
                             Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
+                                'Success!',
+                                res.message,
                                 'success'
                             )
                             document.querySelector('.board').dispatchEvent(new CustomEvent('list-mutated'));
                         } else {
                             Swal.fire(
                                 'Failed!',
-                                'The data has\'nt been deleted succesfully.',
+                                res.message,
                                 'error'
                             )
                         }
                     }).fail((jqXHR) => {
+                        var response = jqXHR.responseJSON;
+                        var title = 'Failed!';
+                        var message = response.message ?? @json(__('response.server_error'));
+                        switch(jqXHR.status) {
+                            case 403: title = 'Not Authorized!'; break;
+                            case 500: title = 'Server Error'; break;
+                        }
                         Swal.fire(
-                            'Failed!',
-                            'The data has\'nt been deleted succesfully.',
+                            title,
+                            message,
                             'error'
                         )
                     });
@@ -288,6 +295,11 @@
                     $card.find('.task-priority').removeClass('low medium high').addClass(res.priority);
                     $card.find('.task-duedate').text((res.due_date == null ? "" : "Due by " + moment(res.due_date)
                         .format('D MMM YYYY')));
+                    $card.find('.edit').css("display", res.can_update ? "block" : "none");
+                    $card.find('.delete').css("display", res.can_delete ? "block" : "none");
+                    if(res.can_update == false && res.can_delete == false)
+                        $card.find('.task-action').hide();
+                    else $card.find('.task-action').show();
                 }).fail(function() {
                     Swal.fire({
                         toast: true,
@@ -304,7 +316,7 @@
 
         function loadCards() {
             $.get(@json(route('tasks.cards')), {
-                project_id: getQueryVariable('project_id')
+                project_id: getQueryVariable('id')
             }).done(function(res) {
                 $('.task-list').empty();
                 for (task of res) {
@@ -316,8 +328,15 @@
                         task.comments_count,
                         task.files_count,
                         task.priority,
-                        task.due_date
+                        task.due_date,
+                        task.can_update,
+                        task.can_delete
                     ));
+                    if(task.can_update == false && task.can_delete == false) {
+                        $taskCard.find('.task-action').hide();
+                    } else {
+                        $taskCard.find('.task-action').show();
+                    }
                     $taskCard.data('order', task.order);
                     $taskCard.data('status', task.status);
                     $('#' + task.status).append($taskCard);
@@ -326,6 +345,10 @@
                     if(e != undefined)
                         refreshCard(e.detail.task_id);
                 });
+                var task_id = getQueryVariable('task_id');
+                if(task_id != false) {
+                    $('.task-card[data-id='+task_id+']').click();
+                }
             }).fail(function(jqXHR) {
                 Swal.fire({
                     toast: true,
@@ -348,17 +371,25 @@
             totalComments,
             totalFiles,
             priority,
-            dueDate
+            dueDate,
+            canUpdate,
+            canDelete
         ) {
+            var btnEdit =
+            '<button class="edit" type="button" data-action="edit" data-id="' + taskId + '">' +
+                '<i class="fas fa-pen"></i>' +
+            '</button>';
+            var btnDelete =
+            '<button class="delete" type="button" data-id="' + taskId + '">'+
+                '<i class="fas fa-trash"></i>'+
+            '</button>';
             html =
                 '<div class="task-card" data-id="' + taskId +
                 '" data-toggle="modal" data-target="#popup-card" draggable="true">' +
                 '<div class="task-action">' +
-                '<button class="edit" type="button" data-action="edit" data-id="' + taskId + '">' +
-                '<i class="fas fa-pen"></i>' +
-                '</button>' +
-                '<button class="delete" type="button" data-id="' + taskId + '"><i class="fas fa-trash"></i></button>' +
-                '</div>' +
+                (!canUpdate ? '' : btnEdit) +
+                (!canDelete ? '' : btnDelete) +
+                '</div>'+
                 '<p class="task-title">' + taskName + '</p>' +
                 '<div class="task-body">' +
                 '<span class="task-checklist">' + totalDoneSubtasks + '/' + totalSubtasks +
@@ -380,7 +411,7 @@
         }
 
         async function saveTaskCard(taskId, destStatus, destOrder) {
-            var project_id = getQueryVariable('project_id');
+            var project_id = getQueryVariable('id');
             var result = await $.ajax({
                 method: 'POST',
                 url: '/tasks/move',
@@ -395,16 +426,11 @@
                 }
             });
             if(result.status == false) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true,
-                    title: 'Error',
-                    text: result.message,
-                    icon: 'error'
-                });
+                Swal.fire(
+                    'Failed!',
+                    result.message,
+                    'error'
+                );
             }
             return result.status;
         }

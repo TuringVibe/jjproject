@@ -62,9 +62,10 @@ class Task extends Model
         return $query->where('project_id', $project_id);
     }
 
-    public function scopeNewOrder($query, $project_id) {
+    public function scopeNewOrder($query, $project_id, $status) {
         $last_task = $query->whereNotNull('order')
             ->where('project_id',$project_id)
+            ->where('status',$status)
             ->orderBy('order','desc')
             ->first();
         return $last_task == null ? 1 : $last_task->order + 1;

@@ -20,7 +20,7 @@ class ValidateProjectId extends FormRequest
 
     public function prepareForValidation() {
         $this->merge([
-            'project_id' => trim(strip_tags($this->project_id))
+            'id' => trim(strip_tags($this->id))
         ]);
     }
 
@@ -32,7 +32,7 @@ class ValidateProjectId extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => ['required','integer', Rule::exists(Project::class, 'id')->where(function($query) {
+            'id' => ['required','integer', Rule::exists(Project::class, 'id')->where(function($query) {
                 $query->whereNull('deleted_at');
             })]
         ];

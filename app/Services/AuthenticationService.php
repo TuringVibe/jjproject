@@ -9,7 +9,7 @@ class AuthenticationService {
     public function login($email, $password, $remember = false) {
         $user = User::whereNull('deleted_at')->where('email',$email)->first();
         if($user AND Auth::attempt(['email' => $email, 'password' => $user->salt.$password], $remember)) {
-            return true;
+            return $user;
         }
         return false;
     }

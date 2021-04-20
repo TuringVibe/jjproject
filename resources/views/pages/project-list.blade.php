@@ -41,7 +41,7 @@
 @section('content')
     <div class="content container-fluid">
         @include('components.content-header',[
-                'with_btn' => true,
+                'with_btn' => request()->user()->can('create',App\Models\Project::class),
                 'btn_label' => 'Create Project',
                 'action' => 'openModal()'
             ]
@@ -61,6 +61,7 @@
                             <option value="canceled">Canceled</option>
                         </select>
                     </div>
+                    @can('viewAny',App\Models\Project::class)
                     <div class="col-auto form-group">
                         <label for="filter-user">User</label>
                         <select id="filter-user" class="form-control">
@@ -70,6 +71,7 @@
                             @endforeach
                         </select>
                     </div>
+                    @endcan
                     <div class="col-auto form-group">
                         <label for="filter-label">Label</label>
                         <select id="filter-label" class="form-control">
@@ -218,12 +220,15 @@
                 width: "100px",
             },
             {
+                visible: @json(auth()->user()->role == "admin"),
                 data: null,
                 width: "90px",
                 render: (data, type, row, meta) => {
-                    return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-project" data-action="edit"'+
-                        'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+
-                        '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';
+                    htmlUpdate = '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-project" data-action="edit" data-id="'+row.id+'"><i class="fas fa-pen"></i></button>';
+                    htmlDelete = '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';
+                    if(!row.can_update) htmlUpdate = '';
+                    if(!row.can_delete) htmlDelete = '';
+                    return htmlUpdate+htmlDelete;
                 }
             }
         ]
@@ -236,7 +241,7 @@
     $("#list tbody").on('click','tr',function(e) {
         if($(e.target).is("tr,td")) {
             var data = table.row(this).data();
-            window.location.href = '/projects/detail?project_id='+data.id;
+            window.location.href = '/projects/detail?id='+data.id;
         }
     });
 @endpush

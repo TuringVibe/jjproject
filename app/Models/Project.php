@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -42,11 +43,16 @@ class Project extends Model
     }
 
     public function files() {
-        return $this->belongsToMany(File::class, 'project_files')->withTimestamps();
+        return $this->belongsToMany(File::class, 'project_files')->withTimestamps()
+        ->withPivot('created_by','updated_by');
     }
 
     public function tasks() {
         return $this->hasMany(Task::class);
+    }
+
+    public function comments() {
+        return $this->hasManyThrough(TaskComment::class, Task::class);
     }
 
     public function milestones() {

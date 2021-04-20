@@ -48,34 +48,42 @@ class ProjectService {
         $projects = $query_builder->orderBy('created_at','desc')
             ->select('id','name','status')
             ->withCount('tasks')
-            ->get()->toArray();
+            ->get()->map(function($item,$key){
+                $item['can_update'] = request()->user()->can('update',$item);
+                $item['can_delete'] = request()->user()->can('delete',$item);
+                return $item;
+            });
 
         return $projects;
     }
 
     public function detail($id) {
-        $project = Project::with(['users:id,firstname,lastname,img_path','labels:id,name,color'])->where('id',$id)->first();
+        $project = Project::with(['users:id,firstname,lastname,img_path','labels:id,name,color'])
+            ->where('id',$id)
+            ->withCount('comments')
+            ->first();
         return $project;
     }
 
-    #TODO: ubah algoritma save disesuaikan dengan financemutationservice
     public function save($attr) {
         try{
             $project = null;
             DB::transaction(function () use(&$project, $attr){
                 if(isset($attr['id'])) {
                     $project = Project::find($attr['id']);
-                    if(!empty($attr['user_ids'])) {
-                        $project->users()->detach();
-                        foreach($attr['user_ids'] as $user_id) {
-                            $project->users()->attach($user_id);
+                    if(isset($attr['user_ids'])) {
+                        if(empty($attr['user_ids'])) {
+                            $project->users()->detach();
+                        } else {
+                            $project->users()->sync($attr['user_ids']);
                         }
                     }
                     if(array_key_exists('user_ids',$attr)) unset($attr['user_ids']);
-                    if(!empty($attr['project_label_ids'])) {
-                        $project->labels()->detach();
-                        foreach($attr['project_label_ids'] as $label_id) {
-                            $project->labels()->attach($label_id);
+                    if(isset($attr['project_label_ids'])) {
+                        if(empty($attr['project_label_ids'])) {
+                            $project->labels()->detach();
+                        } else {
+                            $project->labels()->sync($attr['project_label_ids']);
                         }
                     }
                     if(array_key_exists('project_label_ids',$attr)) unset($attr['project_label_ids']);
@@ -90,14 +98,10 @@ class ProjectService {
                     $attr['updated_by'] = $attr['created_by'];
                     $project = Project::create($attr);
                     if(!empty($user_ids)) {
-                        foreach($user_ids as $user_id) {
-                            $project->users()->attach($user_id);
-                        }
+                        $project->users()->sync($user_ids);
                     }
                     if(!empty($project_label_ids)) {
-                        foreach($project_label_ids as $label_id) {
-                            $project->labels()->attach($label_id);
-                        }
+                        $project->labels()->sync($project_label_ids);
                     }
                 }
             });

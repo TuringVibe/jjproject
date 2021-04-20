@@ -178,7 +178,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Total Comments</h5>
-                                <p class="h5">0</p>
+                                <p class="h5">{{$detail['comments_count']}}</p>
                             </div>
                         </div>
                     </div>
@@ -229,7 +229,9 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div><h4>Project Milestones</h4></div>
+                        @can('create',App\Models\Milestone::class)
                         <button class="btn btn-negative" type="button" data-toggle="modal" data-target="#popup-milestone">Create Milestone</button>
+                        @endcan
                     </div>
                     <div class="card-body">
                         <table id="milestones" class="table table-striped table-bordered">
@@ -282,22 +284,29 @@
                     }).done((res) => {
                         if(res == true) {
                             Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
+                                'Success!',
+                                @json(__('response.delete_succeed')),
                                 'success'
                             )
                             document.querySelector('#files').dispatchEvent(new CustomEvent('mutated'));
                         } else {
                             Swal.fire(
                                 'Failed!',
-                                'The data has\'nt been deleted succesfully.',
+                                @json(__('response.delete_failed')),
                                 'error'
                             )
                         }
                     }).fail((jqXHR) => {
+                        var response = jqXHR.responseJSON;
+                        var title = 'Failed!';
+                        var message = response.message ?? @json(__('response.delete_failed'));
+                        switch(jqXHR.status) {
+                            case 403: title = 'Not Authorized'; break;
+                            case 500: title = 'Server Error'; break;
+                        }
                         Swal.fire(
-                            'Failed!',
-                            'The data has\'nt been deleted succesfully.',
+                            title,
+                            message,
                             'error'
                         )
                     });
@@ -324,24 +333,31 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         }
                     }).done((res) => {
-                        if(res == true) {
+                        if(res.status) {
                             Swal.fire(
-                                'Deleted!',
-                                'Your data has been deleted.',
+                                'Success!',
+                                res.message,
                                 'success'
                             )
                             document.querySelector('#milestones').dispatchEvent(new CustomEvent('mutated'));
                         } else {
                             Swal.fire(
                                 'Failed!',
-                                'The data has\'nt been deleted succesfully.',
+                                res.message,
                                 'error'
                             )
                         }
                     }).fail((jqXHR) => {
+                        var response = jqXHR.responseJSON;
+                        var title = 'Failed!';
+                        var message = response.message ?? @json(__('response.delete_failed'));
+                        switch(jqXHR.status) {
+                            case 403: title = 'Not Authorized'; break;
+                            case 500: title = 'Server Error'; break;
+                        }
                         Swal.fire(
-                            'Failed!',
-                            'The data has\'nt been deleted succesfully.',
+                            title,
+                            message,
                             'error'
                         )
                     });
@@ -377,12 +393,12 @@
     </script>
     <script>
         function goToKanbanBoard() {
-            window.location.href = '/projects/board?project_id='+getQueryVariable('project_id');
+            window.location.href = '/projects/board?id='+getQueryVariable('id');
         }
 
         function uploadFile(e) {
             var formData = new FormData(e.target);
-            formData.append('project_id', getQueryVariable('project_id'));
+            formData.append('project_id', getQueryVariable('id'));
             $.ajax({
                 method: 'POST',
                 url: @json(route('project-files.save')),
@@ -422,7 +438,7 @@
             url: '{{ route('project-files.data') }}',
             dataSrc: '',
             data: (d) => {
-                d.project_id = getQueryVariable('project_id');
+                d.project_id = getQueryVariable('id');
             }
         },
         columns: [
@@ -438,8 +454,10 @@
                 data: null,
                 width: "90px",
                 render: (data, type, row, meta) => {
-                    return '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="downloadData(this)"><i class="fas fa-download"></i></button>'+
-                        '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteFile(this)"><i class="fas fa-trash"></i></button>';
+                    var htmlDownload = '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="downloadData(this)"><i class="fas fa-download"></i></button>';
+                    var htmlDelete = '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteFile(this)"><i class="fas fa-trash"></i></button>';
+                    if(!row.can_delete) htmlDelete = '';
+                    return htmlDownload+htmlDelete;
                 }
             }
         ]
@@ -458,7 +476,7 @@
             url: '{{ route('project-milestones.data') }}',
             dataSrc: '',
             data: (d) => {
-                d.project_id = getQueryVariable('project_id');
+                d.project_id = getQueryVariable('id');
                 d.name = $('#filter-name').val();
                 d.status = $('#filter-status').val();
             }
@@ -474,6 +492,7 @@
                 }
             },
             {
+                visible: @json(request()->user()->role == "admin"),
                 data: null,
                 width: "90px",
                 render: (data, type, row, meta) => {

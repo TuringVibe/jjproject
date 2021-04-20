@@ -118,6 +118,10 @@
             color: #474745;
         }
 
+        .action {
+            min-width: 53px;
+        }
+
         .action button {
             margin-left: 5px;
             padding: 5px;
@@ -278,15 +282,17 @@ $('.add-subtask').on('click',addSubtask);
             $modal.find('#priority').addClass(res.priority);
             $modal.find('#description').text(res.description ?? "-");
             $modal.find('#milestone').text(res.milestone == null ? "-" : res.milestone.name);
-            var user_ids = [];
-            for(user of res.users) {
-                var img_url = '/storage/'+user.img_path;
-                var firstnameInitial = user.firstname.charAt(0);
-                var lastnameInitial = user.lastname !== null ? user.lastname.charAt(0) : '';
-                var nameInitial = user.img_path !== null ? '' : firstnameInitial+lastnameInitial;
-                var imgPath = user.img_path !== null ? 'style="background-image: url(\''+img_url+'\')"' : '';
-                $modal.find('#users').append('<span class="user-img" '+imgPath+'>'+nameInitial+'</span>');
+            if(res != null) {
+                for(user of res.users) {
+                    var img_url = '/storage/'+user.img_path;
+                    var firstnameInitial = user.firstname.charAt(0);
+                    var lastnameInitial = user.lastname !== null ? user.lastname.charAt(0) : '';
+                    var nameInitial = user.img_path !== null ? '' : firstnameInitial+lastnameInitial;
+                    var imgPath = user.img_path !== null ? 'style="background-image: url(\''+img_url+'\')"' : '';
+                    $modal.find('#users').append('<span class="user-img" '+imgPath+'>'+nameInitial+'</span>');
+                }
             }
+            if(res == null || res.users.length == 0) $modal.find('#users').append('-');
             for(subtask of res.subtasks) {
                 $subtask = $(subtaskHtml());
                 $modal.find('.add-subtask').before($subtask);
@@ -296,13 +302,25 @@ $('.add-subtask').on('click',addSubtask);
                 $comment = $(commentHtml());
                 $modal.find('.comments-list').append($comment);
                 commentStandbyMode($comment, comment);
+                $comment.find('.edit').css("display", comment.can_update ? 'inline-block' : 'none');
+                $comment.find('.delete').css("display", comment.can_delete ? 'inline-block' : 'none');
+                if(comment.can_update == false && comment.can_delete == false) {
+                    $comment.find('.action').hide();
+                } else {
+                    $comment.find('.action').show();
+                }
             }
             for(file of res.files) {
                 $file = $(fileHtml());
                 $modal.find('.files-list').append($file);
                 fileStandbyMode($file, file);
+                $file.find('.delete').css("display", file.can_delete ? 'inline-block' : 'none');
+                if(file.can_update == false && file.can_delete == false) {
+                    $file.find('.action').hide();
+                } else {
+                    $file.find('.action').show();
+                }
             }
-            if(!user_ids.length) $modal.find('#users').append('-');
         });
     }
 
@@ -330,6 +348,14 @@ $('.add-subtask').on('click',addSubtask);
                     $comment = $(commentHtml());
                     $modal.find('.comments-list').append($comment);
                     commentStandbyMode($comment, res.data);
+                    $comment.find('.edit').css("display", res.data.can_update ? 'inline-block' : 'none');
+                    $comment.find('.delete').css("display", res.data.can_delete ? 'inline-block' : 'none');
+                    if(res.data.can_update == false && res.data.can_delete == false) {
+                        $comment.find('.action').hide();
+                    } else {
+                        $comment.find('.action').show();
+                    }
+
                     $modal.find('#comment').val(null);
                     $modal.find('#validate-comment').text(null);
                     $modal.find('#comment').removeClass('is-invalid');
@@ -346,23 +372,26 @@ $('.add-subtask').on('click',addSubtask);
                     document.querySelector('.task-card').dispatchEvent(new CustomEvent('card-mutated',{detail: {task_id: res.data.task_id}}));
                 }
             }).fail((jqXHR, textStatus, errorResponse) => {
+                var response = jqXHR.responseJSON;
                 if(jqXHR.status == 422) {
-                    var errors = jqXHR.responseJSON.errors;
+                    var errors = response.errors;
                     for(error in errors) {
                         $('#validate-'+error).text(errors[error]);
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: 'Error',
-                        text: 'There is something wrong happened in your server',
-                        icon: 'error'
-                    });
+                    var title = 'Failed!';
+                    var message = response.message;
+
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
                 }
             });
             e.preventDefault();
@@ -387,6 +416,8 @@ $('.add-subtask').on('click',addSubtask);
                     $file = $(fileHtml());
                     $modal.find('.files-list').append($file);
                     fileStandbyMode($file, res.data);
+                    $file.find('.delete').css("display", res.data.can_delete ? 'inline-block' : 'none');
+
                     $modal.find('#file').val(null);
                     $modal.find('#validate-file').text(null);
                     $modal.find('#file').removeClass('is-invalid');
@@ -404,23 +435,25 @@ $('.add-subtask').on('click',addSubtask);
                     });
                 }
             }).fail((jqXHR, textStatus, errorResponse) => {
+                var response = jqXHR.responseJSON;
                 if(jqXHR.status == 422) {
-                    var errors = jqXHR.responseJSON.errors;
+                    var errors = response.errors;
                     for(error in errors) {
                         $('#validate-'+error).text(errors[error]);
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: 'Error',
-                        text: 'There is something wrong happened in your server',
-                        icon: 'error'
-                    });
+                    var title = 'Failed!';
+                    var message = response.message;
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
                 }
             });
             e.preventDefault();

@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ProjectFileService {
 
+    public function getProject($file_id) {
+        $project = File::find($file_id)->project[0];
+        return $project;
+    }
+
     public function get($project_id) {
         $files = Project::find($project_id)->files()
             ->whereNull('files.deleted_at')
@@ -30,15 +35,19 @@ class ProjectFileService {
         try{
             $file = null;
             DB::transaction(function () use(&$file, $project_id, $uploaded_file){
+                $logged_in_user_id = Auth::user()->id;
                 $project = Project::find($project_id);
                 $file_path = $uploaded_file->store('projects');
                 $filename = $uploaded_file->getClientOriginalName();
                 $ext = $uploaded_file->extension();
                 $size = Storage::size($file_path);
-                $created_by = Auth::user()->id;
-                $updated_by = $created_by;
-                $file = new File(compact("filename","file_path","ext","size","created_by","updated_by"));
-                $project->files()->save($file);
+                $created_by = $logged_in_user_id;
+                $updated_by = $logged_in_user_id;
+                $file = File::create(compact("filename","file_path","ext","size","created_by","updated_by"));
+                $project->files()->attach($file->id, [
+                    'updated_by' => $logged_in_user_id,
+                    'created_by' => $logged_in_user_id
+                ]);
             });
             return $file;
         } catch(\Exception $e) {

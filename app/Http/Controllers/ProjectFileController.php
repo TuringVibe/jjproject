@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidateProjectFile;
 use App\Http\Requests\ValidateProjectFileId;
 use App\Http\Requests\ValidateProjectFileParams;
+use App\Models\Project;
 use App\Services\ProjectFileService;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectFileController extends Controller
 {
@@ -18,7 +20,11 @@ class ProjectFileController extends Controller
 
     public function data(ValidateProjectFileParams $request) {
         $result = $this->project_file_service->get($request->project_id);
-        echo json_encode($result->toArray());
+        $result = $result->map(function($item,$key) use($request){
+            $item['can_delete'] = $request->user()->can('deleteFile',[Project::find($request->project_id),$item['id']]);
+            return $item;
+        });
+        return response()->json($result);
     }
 
     public function download(ValidateProjectFileId $request) {
@@ -32,6 +38,11 @@ class ProjectFileController extends Controller
     }
 
     public function delete(ValidateProjectFileId $request) {
+        $project = $this->project_file_service->getProject($request->id);
+        $response = Gate::inspect('deleteFile',[$project,$request->id]);
+        if(!$response->allowed())
+            return response()->json(['status' => false, 'message' => $response->message()], 403);
+
         $result = $this->project_file_service->delete($request->id);
         return $result;
     }

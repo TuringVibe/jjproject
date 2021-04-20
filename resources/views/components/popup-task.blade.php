@@ -124,7 +124,7 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
         $modal.find('#milestone-id').val(null);
         $modal.find('#due-date').val(null);
         $modal.find('#description').val(null);
-        $modal.find('#user-ids').val(null).trigger('change');
+        $modal.find('#user-ids').val([]).trigger('change');
         $modal.find('.is-invalid').removeClass('is-invalid');
     }
 
@@ -132,13 +132,13 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
         var $modal = $(this);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-task-title').text('Create Task');
-        $modal.find('#project_id').val(getQueryVariable('project_id'));
+        $modal.find('#project_id').val(getQueryVariable('id'));
         if($modal.data('action') == 'edit') {
             var id = $modal.data('id');
+            $modal.find('#id').val(id);
             $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-task-title').text('Update Task');
             $.get('{{route("tasks.edit")}}',{id: id}).done((res) => {
-                $modal.find('#id').val(res.id);
                 $modal.find('#name').val(res.name);
                 $modal.find('#status').val(res.status);
                 $modal.find('#priority').val(res.priority);
@@ -195,16 +195,18 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: 'Error',
-                        text: 'There is something wrong happened in your server',
-                        icon: 'error'
-                    });
+                    var response = jqXHR.responseJSON;
+                    var title = 'Failed!';
+                    var message = response.message ?? @json(__('response.server_error'));
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
                 }
             });
             e.preventDefault();

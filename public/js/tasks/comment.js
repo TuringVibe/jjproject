@@ -92,16 +92,18 @@ function saveComment(e) {
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 } else {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        title: 'Error',
-                        text: 'There is something wrong happened in your server',
-                        icon: 'error'
-                    });
+                    var response = jqXHR.responseJSON;
+                    var title = 'Failed!';
+                    var message = response.message;
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
                 }
             });
         });
@@ -109,59 +111,74 @@ function saveComment(e) {
 }
 
 function deleteComment(e) {
-    $comment = $(this).closest(".comment");
-    var id = $comment.data('id');
-    var task_id = $('#popup-card').data('id');
-    $.ajax({
-        method: 'POST',
-        url: '/task-comments/delete',
-        data: {id: id},
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    }).done(function(res) {
-        if(res.status == true) {
-            $comment.remove();
-            document.querySelector('.task-card').dispatchEvent(new CustomEvent('card-mutated',{detail: {task_id: task_id}}));
-            Swal.fire({
-                toast: true,
-                position: 'top',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                title: 'Success',
-                text: res.message,
-                icon: 'success'
-            });
-        } else {
-            Swal.fire({
-                toast: true,
-                position: 'top',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                title: 'Error',
-                text: res.message,
-                icon: 'error'
-            });
-        }
-    }).fail(function(jqXHR) {
-        if(jqXHR.status == 422) {
-            var errors = jqXHR.responseJSON.errors;
-            for(error in errors) {
-                $('#validate-'+error).text(errors[error]);
-                $('[name='+error+']').addClass('is-invalid');
-            }
-        } else {
-            Swal.fire({
-                toast: true,
-                position: 'top',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                title: 'Error',
-                text: 'There is something wrong happened in your server',
-                icon: 'error'
+    Swal.fire({
+        title: 'Are you sure ?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $comment = $(this).closest(".comment");
+            var id = $comment.data('id');
+            var task_id = $('#popup-card').data('id');
+            $.ajax({
+                method: 'POST',
+                url: '/task-comments/delete',
+                data: {id: id},
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            }).done(function(res) {
+                if(res.status == true) {
+                    $comment.remove();
+                    document.querySelector('.task-card').dispatchEvent(new CustomEvent('card-mutated',{detail: {task_id: task_id}}));
+                    Swal.fire({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        title: 'Success',
+                        text: res.message,
+                        icon: 'success'
+                    });
+                } else {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        title: 'Error',
+                        text: res.message,
+                        icon: 'error'
+                    });
+                }
+            }).fail(function(jqXHR) {
+                if(jqXHR.status == 422) {
+                    var errors = jqXHR.responseJSON.errors;
+                    for(error in errors) {
+                        $('#validate-'+error).text(errors[error]);
+                        $('[name='+error+']').addClass('is-invalid');
+                    }
+                } else {
+                    var response = jqXHR.responseJSON;
+                    var title = 'Failed!';
+                    var message = response.message;
+
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
+                }
             });
         }
     });

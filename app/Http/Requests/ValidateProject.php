@@ -22,6 +22,7 @@ class ValidateProject extends FormRequest
 
     public function prepareForValidation() {
         $this->merge([
+            'id' => $this->id == null ? null : trim(strip_tags($this->id)),
             'name' => trim(strip_tags($this->name)),
             'status' => trim(strip_tags($this->status)),
             'budget' => $this->budget == null ? null : trim(strip_tags($this->budget)),

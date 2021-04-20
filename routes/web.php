@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FinanceDashboardController;
 use App\Http\Controllers\FinanceLabelController;
@@ -31,8 +30,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    if(auth()->check())
-        return redirect(route("project-dashboard.dashboard"));
+    if(auth()->check()) {
+        switch(auth()->user()->role){
+            case "user":
+                return redirect(route("projects.list"));
+            break;
+            case "admin":
+                return redirect(route("project-dashboard.dashboard"));
+            break;
+        }
+    }
     return redirect(route("login"));
 });
 
@@ -49,18 +56,6 @@ Route::middleware(['guest'])->group(function() {
 
 Route::middleware(['auth'])->group(function() {
     Route::post('/logout', [AuthenticationController::class, "logout"])->name("logout");
-
-    Route::prefix('calendar')->name('events.')->group(function() {
-        Route::get('/', [EventController::class, "list"])->name("list");
-        Route::get('/data', [EventController::class, "data"])->name("data");
-        Route::get('/edit', [EventController::class, "edit"])->name("edit");
-        Route::post('/save', [EventController::class, "save"])->name("save");
-        Route::post('/delete', [EventController::class, "delete"])->name("delete");
-    });
-
-    Route::prefix('project-dashboard')->name('project-dashboard.')->group(function(){
-        Route::get('/', [ProjectDashboardController::class, "dashboard"])->name('dashboard');
-    });
 
     Route::prefix('projects')->name('projects.')->group(function() {
         Route::get('/list',[ProjectController::class, "list"])->name('list');
@@ -119,47 +114,61 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/edit',[SubtaskController::class, "edit"])->name('edit');
     });
 
-    Route::prefix('project-labels')->name('project-labels.')->group(function(){
-        Route::get('/list', [ProjectLabelController::class, "list"])->name('list');
-        Route::get('/data', [ProjectLabelController::class, "data"])->name('data');
-        Route::get('/detail', [ProjectLabelController::class, "detail"])->name('detail');
-        Route::post('/save', [ProjectLabelController::class, "save"])->name('save');
-        Route::post('/delete', [ProjectLabelController::class, "delete"])->name('delete');
-    });
-
-    Route::prefix('finance-dashboard')->name('finance-dashboard.')->group(function() {
-        Route::get('/',[FinanceDashboardController::class, 'dashboard'])->name('dashboard');
-        Route::get('/data-by-label', [FinanceDashboardController::class, "dataByLabel"])->name('data-by-label');
-        Route::get('/periodic-statistic', [FinanceDashboardController::class, "periodicStatistic"])->name('periodic-statistic');
-    });
-
-    Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {
-        Route::get('/list',[FinanceMutationController::class, "list"])->name('list');
-        Route::get('/data',[FinanceMutationController::class, "data"])->name('data');
-        Route::get('/edit',[FinanceMutationController::class, "edit"])->name('edit');
-        Route::post('/save',[FinanceMutationController::class, "save"])->name('save');
-        Route::post('/delete',[FinanceMutationController::class, "delete"])->name('delete');
-        Route::prefix('/scheduled')->name('scheduled.')->group(function() {
-            Route::get('/data',[FinanceMutationScheduleController::class, "data"])->name('data');
-            Route::get('/edit',[FinanceMutationScheduleController::class, "edit"])->name('edit');
-            Route::post('/save',[FinanceMutationScheduleController::class, "save"])->name('save');
-            Route::post('/delete',[FinanceMutationScheduleController::class, "delete"])->name('delete');
+    Route::middleware(['admin'])->group(function() {
+        Route::prefix('project-dashboard')->name('project-dashboard.')->group(function(){
+            Route::get('/', [ProjectDashboardController::class, "dashboard"])->name('dashboard');
         });
-    });
 
-    Route::prefix('finance-labels')->name('finance-labels.')->group(function() {
-        Route::get('/list',[FinanceLabelController::class, "list"])->name('list');
-        Route::get('/data',[FinanceLabelController::class, "data"])->name('data');
-        Route::get('/detail',[FinanceLabelController::class, "detail"])->name('detail');
-        Route::post('/save',[FinanceLabelController::class, "save"])->name('save');
-        Route::post('/delete',[FinanceLabelController::class, "delete"])->name('delete');
-    });
+        Route::prefix('project-labels')->name('project-labels.')->group(function(){
+            Route::get('/list', [ProjectLabelController::class, "list"])->name('list');
+            Route::get('/data', [ProjectLabelController::class, "data"])->name('data');
+            Route::get('/detail', [ProjectLabelController::class, "detail"])->name('detail');
+            Route::post('/save', [ProjectLabelController::class, "save"])->name('save');
+            Route::post('/delete', [ProjectLabelController::class, "delete"])->name('delete');
+        });
 
-    Route::prefix('users')->name('users.')->group(function() {
-        Route::get('/list', [UserController::class, "list"])->name('list');
-        Route::get('/data', [UserController::class, "data"])->name('data');
-        Route::get('/detail', [UserController::class, "detail"])->name('detail');
-        Route::post('/save', [UserController::class, "save"])->name('save');
-        Route::post('/delete', [UserController::class, "delete"])->name('delete');
+        Route::prefix('calendar')->name('events.')->group(function() {
+            Route::get('/', [EventController::class, "list"])->name("list");
+            Route::get('/data', [EventController::class, "data"])->name("data");
+            Route::get('/edit', [EventController::class, "edit"])->name("edit");
+            Route::post('/save', [EventController::class, "save"])->name("save");
+            Route::post('/delete', [EventController::class, "delete"])->name("delete");
+        });
+
+        Route::prefix('finance-dashboard')->name('finance-dashboard.')->group(function() {
+            Route::get('/',[FinanceDashboardController::class, 'dashboard'])->name('dashboard');
+            Route::get('/data-by-label', [FinanceDashboardController::class, "dataByLabel"])->name('data-by-label');
+            Route::get('/periodic-statistic', [FinanceDashboardController::class, "periodicStatistic"])->name('periodic-statistic');
+        });
+
+        Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {
+            Route::get('/list',[FinanceMutationController::class, "list"])->name('list');
+            Route::get('/data',[FinanceMutationController::class, "data"])->name('data');
+            Route::get('/edit',[FinanceMutationController::class, "edit"])->name('edit');
+            Route::post('/save',[FinanceMutationController::class, "save"])->name('save');
+            Route::post('/delete',[FinanceMutationController::class, "delete"])->name('delete');
+            Route::prefix('/scheduled')->name('scheduled.')->group(function() {
+                Route::get('/data',[FinanceMutationScheduleController::class, "data"])->name('data');
+                Route::get('/edit',[FinanceMutationScheduleController::class, "edit"])->name('edit');
+                Route::post('/save',[FinanceMutationScheduleController::class, "save"])->name('save');
+                Route::post('/delete',[FinanceMutationScheduleController::class, "delete"])->name('delete');
+            });
+        });
+
+        Route::prefix('finance-labels')->name('finance-labels.')->group(function() {
+            Route::get('/list',[FinanceLabelController::class, "list"])->name('list');
+            Route::get('/data',[FinanceLabelController::class, "data"])->name('data');
+            Route::get('/detail',[FinanceLabelController::class, "detail"])->name('detail');
+            Route::post('/save',[FinanceLabelController::class, "save"])->name('save');
+            Route::post('/delete',[FinanceLabelController::class, "delete"])->name('delete');
+        });
+
+        Route::prefix('users')->name('users.')->group(function() {
+            Route::get('/list', [UserController::class, "list"])->name('list');
+            Route::get('/data', [UserController::class, "data"])->name('data');
+            Route::get('/detail', [UserController::class, "detail"])->name('detail');
+            Route::post('/save', [UserController::class, "save"])->name('save');
+            Route::post('/delete', [UserController::class, "delete"])->name('delete');
+        });
     });
 });

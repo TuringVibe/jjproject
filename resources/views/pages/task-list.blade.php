@@ -70,6 +70,7 @@
                         <label for="filter-duedate-range">Due Date Range</label>
                         <input id="filter-duedate-range" class="form-control">
                     </div>
+                    @can('viewAny',App\Models\Task::class)
                     <div class="col-auto form-group">
                         <label for="filter-user">User</label>
                         <select id="filter-user" class="select2">
@@ -79,6 +80,7 @@
                             @endforeach
                         </select>
                     </div>
+                    @endcan
                     <div class="col-auto form-group">
                         <label for="filter-status">Status</label>
                         <select id="filter-status" class="form-control">
@@ -274,7 +276,7 @@
     $("#list tbody").on('click','tr',function(e) {
         if($(e.target).is("tr,td")) {
             var data = table.row(this).data();
-            window.location.href = '/projects/board?project_id='+data.project_id+'&task_id='+data.id;
+            window.location.href = '/projects/board?id='+data.project_id+'&task_id='+data.id;
         }
     });
 @endpush

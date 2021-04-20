@@ -32,7 +32,11 @@ class AuthenticationController extends Controller
         $result = $this->auth_service->login($request->email, $request->password, $request->remember_me);
         if($result) {
             $request->session()->regenerate();
-            return redirect()->intended(route('project-dashboard.dashboard'));
+            $alt_route = route('project-dashboard.dashboard');
+            if($result->role == "user")
+                $alt_route = route('projects.list');
+
+            return redirect()->intended($alt_route);
         }
         return back()->with("error",__("auth.failed"));
     }

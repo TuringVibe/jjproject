@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ValidateProject;
 use App\Http\Requests\ValidateProjectId;
 use App\Http\Requests\ValidateProjectParams;
+use App\Models\Project;
 use App\Services\MilestoneService;
 use App\Services\ProjectLabelService;
 use App\Services\ProjectService;
 use App\Services\TaskService;
 use App\Services\UserService;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -42,37 +45,50 @@ class ProjectController extends Controller
 
     public function data(ValidateProjectParams $request) {
         $params['status'] = $request->status;
-        $params['user_id'] = $request->user_id;
         $params['project_label_id'] = $request->project_label_id;
         $params['name'] = $request->name;
+        if(!$request->user()->can('viewAny',Project::class)) {
+            $params['user_id'] = $request->user()->id;
+        } else {
+            $params['user_id'] = $request->user_id;
+        }
         $result = $this->project_service->get($params);
-        echo json_encode($result);
+        return $result->toArray();
     }
 
     public function edit(ValidateProjectId $request) {
-        $result = $this->project_service->detail($request->project_id);
+        $this->authorize('update',Project::find($request->id));
+        $result = $this->project_service->detail($request->id);
         return $result;
     }
 
     public function save(ValidateProject $request) {
+        if(!Gate::any(['update','create'],Project::find($request->id)))
+            return Response::deny(__('response.not_authorized'));
+
         $result = $this->project_service->save($request->validated());
         return $result;
     }
 
     public function delete(ValidateProjectId $request) {
+        $this->authorize('delete',Project::find($request->id));
         $result = $this->project_service->delete($request->id);
         return $result;
     }
 
     public function detail(ValidateProjectId $request) {
+        $project = Project::find($request->id);
+        $response = Gate::inspect('view',$project);
+        if(!$response->allowed()) return redirect()->route('projects.list')->with('error',$response->message());
+
         $this->config['title'] = "PROJECT DETAIL";
         $this->config['active'] = "projects.list";
-        $result = $this->project_service->detail($request->project_id)->toArray();
+        $result = $this->project_service->detail($request->id)->toArray();
         $this->config['detail'] = $result;
         $this->config['detail']['startdate'] = Carbon::parse($result['startdate'])->format('d F Y');
         $this->config['detail']['enddate'] = Carbon::parse($result['enddate'])->format('d F Y');
         $this->config['detail']['days_left'] = Carbon::now()->diffInDays($result['enddate']);
-        $this->config['tasks_statistic'] = $this->task_service->statistic($request->project_id);
+        $this->config['tasks_statistic'] = $this->task_service->statistic($request->id);
         $this->config['navs'] = [
             [
                 'label' => 'Projects',
@@ -86,10 +102,12 @@ class ProjectController extends Controller
     }
 
     public function board(ValidateProjectId $request) {
-        $project = (new ProjectService())->detail($request->project_id);
+        $this->authorize('view',Project::find($request->id));
+
+        $project = (new ProjectService())->detail($request->id);
         $this->config['title'] = "PROJECT TASKS";
         $this->config['active'] = "projects.list";
-        $this->config['milestones'] = (new MilestoneService())->get($request->project_id);
+        $this->config['milestones'] = (new MilestoneService())->get($request->id);
         $this->config['users'] = (new UserService())->get();
         $this->config['navs'] = [
             [
@@ -98,7 +116,7 @@ class ProjectController extends Controller
             ],
             [
                 'label' => $project->name,
-                'link' => route('projects.detail',['project_id' => $request->project_id])
+                'link' => route('projects.detail',['project_id' => $request->id])
             ],
             [
                 'label' => 'Board'

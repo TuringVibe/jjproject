@@ -147,6 +147,9 @@ class TaskService {
             DB::transaction(function () use(&$task, $attr){
                 if(isset($attr['id'])) {
                     $task = Task::find($attr['id']);
+                    if($task->status != $attr['status']) {
+                        $attr['order'] = 1;
+                    }
                     if(array_key_exists('order',$attr) && !isset($attr['order'])) {
                         unset($attr['order']);
                     }
@@ -157,10 +160,13 @@ class TaskService {
                     $attr['updated_by'] = Auth::user()->id;
                     $task->fill($attr);
                     $task->save();
+                    if($task->wasChanged('order') OR $task->wasChanged('status')) {
+                        $this->move($task->project_id,$task->id,$task->status,$task->order);
+                    }
                 } else {
                     $user_ids = $attr['user_ids'] ?? null;
                     if(array_key_exists('user_ids',$attr)) unset($attr['user_ids']);
-                    $attr['order'] = Task::newOrder($attr['project_id']);
+                    $attr['order'] = Task::newOrder($attr['project_id'], $attr['status']);
                     $attr['created_by'] = Auth::user()->id;
                     $attr['updated_by'] = $attr['created_by'];
                     $task = Task::create($attr);
