@@ -35,7 +35,7 @@ class ValidateProjectFile extends FormRequest
             'project_id' => ['required','integer',Rule::exists(Project::class, 'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
-            'file' => ['required','file','max:2048']
+            'file' => ['required','file']
         ];
     }
 }

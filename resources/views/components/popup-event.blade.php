@@ -202,7 +202,6 @@
             $modal.find('#enddatetime').hide();
             $modal.find('#name').hide();
             $modal.find('#repeat').hide();
-            $modal.find('small.form-text.text-muted').show();
             $modal.find('.show').show();
             $modal.find('.edit').hide();
             $modal.find('#edit').on('click', (e) => { editMode(); });

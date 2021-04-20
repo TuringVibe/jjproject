@@ -79,10 +79,15 @@
             color: #9c9a9a;
         }
 
+        .files-list {
+            margin-top: 1rem;
+        }
         .file{
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
+            padding-top: .5rem;
+            padding-bottom: .5rem;
         }
         .file .file-icon {
             width: 3rem;
@@ -190,7 +195,9 @@
                                     <textarea id="comment" name="comment" class="form-control" aria-describedby="validate-comment"></textarea>
                                     <div id="validate-comment" class="invalid-feedback"></div>
                                 </div>
-                                <button class="col-auto btn btn-default">Submit</button>
+                                <div class="col-auto">
+                                    <button class="btn btn-default">Submit</button>
+                                </div>
                             </div>
                         </form>
                         <div class="comments-list"></div>
@@ -199,18 +206,16 @@
                         <form id="popup-card-file-form" enctype="multipart/form-data">
                             <input type="hidden" name="user_id" value="{{auth()->user()->id}}">
                             <div class="form-row flex-nowrap align-items-center">
-                                <div class="col-auto flex-grow-1 form-group">
-                                    <label for="file">Upload file</label>
+                                <div class="col-auto flex-grow-1">
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="file" name="file" aria-describedby="file-help-block validate-file">
                                         <label class="custom-file-label" for="file">Choose file...</label>
                                         <div id="validate-file" class="invalid-feedback"></div>
                                     </div>
-                                    <small id="file-help-block" class="form-text text-muted">
-                                        The file must not exceeded 2MB in size.
-                                    </small>
                                 </div>
-                                <button class="col-auto btn btn-default">Submit</button>
+                                <div class="col-auto">
+                                    <button class="btn btn-default">Submit</button>
+                                </div>
                             </div>
                         </form>
                         <div class="files-list"></div>
@@ -448,6 +453,10 @@ $('.add-subtask').on('click',addSubtask);
                     switch(jqXHR.status) {
                         case 403: title = 'Not Authorized!'; break;
                         case 500: title = 'Server Error'; break;
+                        case 413:
+                            title = 'File is too big';
+                            message = 'File size is bigger than server allowance';
+                        break;
                     }
                     Swal.fire(
                         title,

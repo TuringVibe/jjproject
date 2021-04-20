@@ -194,15 +194,11 @@
                         <form id="file-upload-form" class="mb-3" enctype="multipart/form-data">
                             <div class="form-row align-items-center">
                                 <div class="col-auto">
-                                    <label for="file"></label>
                                     <div class="custom-file">
                                         <input type="file" class="custom-file-input" id="file" name="file" aria-describedby="file-help-block validate-file">
                                         <label class="custom-file-label" for="file">Choose image file...</label>
                                         <div id="validate-file" class="invalid-feedback"></div>
                                     </div>
-                                    <small id="file-help-block" class="form-text text-muted">
-                                        The file must not exceeded 2MB in size.
-                                    </small>
                                 </div>
                                 <div class="col-auto">
                                     <button type="submit" class="btn btn-default">Upload</button>
@@ -420,6 +416,24 @@
                         $('#validate-'+error).text(errors[error][0]);
                         $('[name='+error+']').addClass('is-invalid');
                     }
+                } else {
+                    var response = jqXHR.responseJSON;
+                    var title = 'Failed!';
+                    var message = response.message;
+
+                    switch(jqXHR.status) {
+                        case 403: title = 'Not Authorized!'; break;
+                        case 500: title = 'Server Error'; break;
+                        case 413:
+                            title = 'File is too big';
+                            message = 'File size is bigger than server allowance';
+                        break;
+                    }
+                    Swal.fire(
+                        title,
+                        message,
+                        'error'
+                    )
                 }
             });
             e.preventDefault();

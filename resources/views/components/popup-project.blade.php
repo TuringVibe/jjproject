@@ -126,11 +126,9 @@ $('.date-picker').daterangepicker({
     function popUpProjectShow(e) {
         var $origin = $(e.relatedTarget);
         var $modal = $(this);
-        $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-project-title').text('Create Project');
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
-            $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-project-title').text('Update Project');
             $.get('{{route("projects.edit")}}',{id: id}).done((res) => {
                 $modal.find('#id').val(res.id);

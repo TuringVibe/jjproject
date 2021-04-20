@@ -36,7 +36,7 @@ class ValidateUser extends FormRequest
             'password' => ['bail','required_without:id','nullable','max:100','confirmed'],
             'firstname' => ['required','string','max:255'],
             'lastname' => ['nullable','string','max:255'],
-            'img' => ['nullable','image','max:1024'],
+            'img' => ['nullable','image'],
             'phone' => ['nullable','max:15'],
             'address' => ['nullable','max:255'],
             'city' => ['nullable','max:255'],

@@ -105,7 +105,7 @@ class ProjectController extends Controller
         $this->authorize('view',Project::find($request->id));
 
         $project = (new ProjectService())->detail($request->id);
-        $this->config['title'] = "PROJECT TASKS";
+        $this->config['title'] = "PROJECT'S TASKS";
         $this->config['active'] = "projects.list";
         $this->config['milestones'] = (new MilestoneService())->get($request->id);
         $this->config['users'] = (new UserService())->get();
@@ -116,7 +116,7 @@ class ProjectController extends Controller
             ],
             [
                 'label' => $project->name,
-                'link' => route('projects.detail',['project_id' => $request->id])
+                'link' => route('projects.detail',['id' => $request->id])
             ],
             [
                 'label' => 'Board'

@@ -70,12 +70,10 @@ $('#popup-milestone').on('shown.bs.modal', popUpMilestoneShown);
     function popUpMilestoneShow(e) {
         var $origin = $(e.relatedTarget);
         var $modal = $(this);
-        $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-milestone-title').text('Create Milestone');
         $modal.find('#project_id').val(getQueryVariable('id'));
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
-            $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-milestone-title').text('Update Milestone');
             $.get('{{route("project-milestones.edit")}}',{id:id}).done((res) => {
                 $modal.find('#id').val(res.id);

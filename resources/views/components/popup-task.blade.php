@@ -130,13 +130,11 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
 
     function popUpTaskShow(e) {
         var $modal = $(this);
-        $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-task-title').text('Create Task');
         $modal.find('#project_id').val(getQueryVariable('id'));
         if($modal.data('action') == 'edit') {
             var id = $modal.data('id');
             $modal.find('#id').val(id);
-            $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-task-title').text('Update Task');
             $.get('{{route("tasks.edit")}}',{id: id}).done((res) => {
                 $modal.find('#name').val(res.name);

@@ -35,7 +35,7 @@ class ValidateTaskFile extends FormRequest
             'task_id' => ['required','integer',Rule::exists(Task::class, 'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
-            'file' => ['required','file','max:2048']
+            'file' => ['required','file']
         ];
     }
 }
