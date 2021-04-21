@@ -19,8 +19,6 @@ class AlterUsersTabelAddAndModifyColumns extends Migration
         });
 
         Schema::table('users',function(Blueprint $table){
-            $table->dropColumn('name');
-            $table->dropUnique('users_email_unique');
             $table->string('firstname',255)->after('id');
             $table->string('lastname',255)->nullable()->after('firstname');
             $table->string('email',255)->change();
