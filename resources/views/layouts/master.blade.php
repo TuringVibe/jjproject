@@ -16,10 +16,12 @@
     @stack('head')
 </head>
 <body>
-    @include('layouts.header')
-    <div class="d-flex">
+    <div class="d-flex flex-nowrap">
         @includeUnless(isset($basic), 'layouts.sidebar')
-        @yield('content')
+        <div class="d-flex flex-column flex-grow-1">
+            @include('layouts.header')
+            @yield('content')
+        </div>
     </div>
     @include('layouts.footer')
     <script src="{{asset('lib/jquery-3.6.0.min.js')}}"></script>
@@ -35,10 +37,6 @@
                 $(e.target).next('.custom-file-label').html(fileName);
             });
             @stack('ready-scripts')
-            $('.content').slimScroll({
-                height: 'auto',
-                width: '100%'
-            });
         });
     </script>
     <script>

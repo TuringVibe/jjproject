@@ -12,12 +12,12 @@
                     <input type="hidden" id="id" name="id">
                     <input type="hidden" id="project_id" name="project_id">
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Name <span class="text-danger">*</span></label>
                         <input type="text" id="name" name="name" class="form-control" aria-describedby="validate-name">
                         <div id="validate-name" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                        <label for="status">Status</label>
+                        <label for="status">Status <span class="text-danger">*</span></label>
                         <select id="status" class="form-control" name="status">
                             <option value="incomplete">Incomplete</option>
                             <option value="complete">Complete</option>

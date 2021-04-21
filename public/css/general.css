@@ -2,6 +2,7 @@
     --header-height: 3.5rem;
     --footer-height: 3rem;
     --container-height: calc(100vh - var(--header-height) - var(--footer-height));
+    --sidebar-height: calc(100vh - var(--footer-height));
 
     --color-font-default: #3d3d3d;
     --com-bg-color-default: #12c73f;
@@ -65,7 +66,7 @@ button.btn.btn-negative {
 }
 
 .header.navbar {
-    height: 3.5rem;
+    height: var(--header-height);
     background-color: var(--com-bg-color-default);
 }
 
@@ -73,14 +74,45 @@ button.btn.btn-negative {
     color: var(--com-color-default);
 }
 
+.header.navbar button.bars {
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 3px;
+    color: var(--com-color-default);
+    background-color: var(--com-bg-color-default);
+}
+.header.navbar button.bars i {
+    font-size: 1.5rem;
+}
+.header .title {
+    color: var(--com-color-default);
+    font-weight: bold;
+}
+
 .sidebar {
     background-color: var(--sidebar-bg-color);
-    padding-top: 1rem;
     padding-bottom: 1rem;
     width: 90%;
     max-width: 250px;
-    height: var(--container-height);
+    height: var(--sidebar-height);
     overflow-y: auto;
+}
+
+.sidebar .logo {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    height: 3.5rem;
+    background-color: var(--com-bg-color-default);
+}
+
+.sidebar .logo a {
+    color: var(--com-color-default);
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 
 .sidebar .sidebar-heading {
@@ -104,7 +136,7 @@ button.btn.btn-negative {
     color: var(--color-font-default);
 }
 
-.sidebar .nav-link i {
+.sidebar .nav-link span.menu-title {
     margin-right: 5px;
 }
 

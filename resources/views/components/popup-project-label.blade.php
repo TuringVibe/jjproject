@@ -14,12 +14,12 @@
                 <form id="popup-project-label-form">
                     <input type="hidden" id="id" name="id">
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Name <span class="text-danger">*</span></label>
                         <input type="text" id="name" name="name" class="form-control" aria-describedby="validate-name">
                         <div id="validate-name" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                        <label for="color-picker">Color</label>
+                        <label for="color-picker">Color <span class="text-danger">*</span></label>
                         <div class="input-group" id="color-picker" title="Choose Color">
                             <input type="text" data-color="#000000" class="form-control" id="color" name="color" placeholder="Click button to choose color.." aria-describedby="validate-color">
                             <span class="input-group-append">

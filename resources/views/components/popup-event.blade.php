@@ -15,26 +15,26 @@
                     <input type="hidden" id="id" name="id">
                     <div class="form-row">
                         <div class="col-6 form-group">
-                            <label for="startdatetime">Start Datetime</label>
+                            <label for="startdatetime">Start Datetime <span class="text-danger">*</span></label>
                             <p id="p-startdatetime"></p>
                             <input type="text" id="startdatetime" name="startdatetime" class="single-date-picker form-control" aria-describedby="validate-startdatetime">
-                            <div id="validate-startdatetime" class="invalid-feedback"></div>
+                            <div id="validate-startdatetime" class="invalid-feedback"><<.,.</div>
                         </div>
                         <div class="col-6 form-group">
-                            <label for="enddatetime">End Datetime</label>
+                            <label for="enddatetime">End Datetime <span class="text-danger">*</span></label>
                             <p id="p-enddatetime"></p>
                             <input type="text" id="enddatetime" name="enddatetime" class="single-date-picker form-control" aria-describedby="validate-enddatetime">
                             <div id="validate-enddatetime" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Name <span class="text-danger">*</span></label>
                         <p id="p-name"></p>
                         <input type="text" id="name" name="name" class="form-control" aria-describedby="validate-name">
                         <div id="validate-name" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                        <label for="repeat">Repeat</label>
+                        <label for="repeat">Repeat <span class="text-danger">*</span></label>
                         <p id="p-repeat"></p>
                         <select id="repeat" class="form-control" name="repeat" aria-describedby="validate-repeat">
                             <option value="once">Once</option>

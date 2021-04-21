@@ -18,12 +18,12 @@
                     <input type="hidden" id="project_id" name="project_id">
                     <div class="form-row">
                         <div class="col-sm-6 form-group">
-                            <label for="name">Name</label>
+                            <label for="name">Name <span class="text-danger">*</span></label>
                             <input type="text" id="name" name="name" class="form-control" aria-describedby="validate-name">
                             <div id="validate-name" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-3 form-group">
-                            <label for="status">Status</label>
+                            <label for="status">Status <span class="text-danger">*</span></label>
                             <select id="status" class="form-control" name="status" aria-describedby="validate-status">
                                 <option value="todo">To Do</option>
                                 <option value="inprogress">In Progress</option>
@@ -32,7 +32,7 @@
                             <div id="validate-status" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-3 form-group">
-                            <label for="priority">Priority</label>
+                            <label for="priority">Priority <span class="text-danger">*</span></label>
                             <select id="priority" class="form-control" name="priority" aria-describedby="validate-priority">
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>

@@ -17,19 +17,19 @@
                     <input type="hidden" id="id" name="id">
                     <div class="form-row">
                         <div class="col-sm-4 form-group">
-                            <label for="mutation-date">Mutation Date</label>
+                            <label for="mutation-date">Mutation Date <span class="text-danger">*</span></label>
                             <input type="text" id="mutation-date" name="mutation_date" class="single-date-picker form-control" aria-describedby="validate-mutation_date">
                             <div id="validate-mutation_date" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-8 form-group">
-                            <label for="name">Name</label>
+                            <label for="name">Name <span class="text-danger">*</span></label>
                             <input type="text" id="name" name="name" class="form-control" aria-describedby="validate-name">
                             <div id="validate-name" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col-sm-3 form-group">
-                            <label for="mode">Mode</label>
+                            <label for="mode">Mode <span class="text-danger">*</span></label>
                             <select id="mode" class="form-control" name="mode" aria-describedby="validate-mode">
                                 <option value="debit">Debit</option>
                                 <option value="credit">Credit</option>
@@ -37,7 +37,7 @@
                             <div id="validate-mode" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-3 form-group">
-                            <label for="currency">Currency</label>
+                            <label for="currency">Currency <span class="text-danger">*</span></label>
                             <select id="currency" name="currency" class="form-control" aria-describedby="validate-currency">
                                 <option value="usd">USD</option>
                                 <option value="cny">CNY</option>
@@ -45,8 +45,8 @@
                             </select>
                             <div id="validate-currency" class="invalid-feedback"></div>
                         </div>
-                        <div class="col-sm-8 form-group">
-                            <label for="nominal">Nominal</label>
+                        <div class="col-sm-6 form-group">
+                            <label for="nominal">Nominal <span class="text-danger">*</span></label>
                             <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
                             <div id="validate-nominal" class="invalid-feedback"></div>
                         </div>

@@ -12,13 +12,13 @@
                     <input type="hidden" id="id" name="id">
                     <div class="form-row">
                         <div class="col-sm-6 form-group">
-                            <label for="email">Email</label>
+                            <label for="email">Email <span class="text-danger">*</span></label>
                             <input type="email" id="email" name="email" class="form-control" aria-describedby="validate-email">
                             <div id="validate-email" class="invalid-feedback">
                             </div>
                         </div>
                         <div class="col-sm-6 form-group">
-                            <label for="role">Role</label>
+                            <label for="role">Role <span class="text-danger">*</span></label>
                             <select id="role" name="role" class="form-control" aria-describedby="validate-role">
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="form-row">
                         <div class="col-sm-6 form-group">
-                            <label for="password">Password</label>
+                            <label for="password">Password <span class="text-danger">*</span></label>
                             <input type="password" autocomplete="off" id="password" name="password" class="form-control" aria-describedby="password-help-block validate-password">
                             <small id="password-help-block" class="form-text text-muted">
                                 Leave it blank, unless if you want to update the password.
@@ -36,14 +36,14 @@
                             <div id="validate-password" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-6 form-group">
-                            <label for="password-confirmation">Confirm Password</label>
+                            <label for="password-confirmation">Confirm Password <span class="text-danger">*</span></label>
                             <input type="password" autocomplete="off" id="password-confirmation" name="password_confirmation" class="form-control" aria-describedby="validate-password_confirmation">
                             <div id="validate-password-confirmation" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="col-sm-6 form-group">
-                            <label for="firstname">Firstname</label>
+                            <label for="firstname">Firstname <span class="text-danger">*</span></label>
                             <input id="firstname" name="firstname" type="text" class="form-control" aria-describedby="validate-firstname">
                             <div id="validate-firstname" class="invalid-feedback">
                             </div>
@@ -159,8 +159,12 @@ $('#popup-user').on('shown.bs.modal', popUpUserShown);
         var $modal = $(this);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-user-title').text('Create User');
+        $modal.find('label[for=password] span').show()
+        $modal.find('label[for=password-confirmation] span').show()
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
+            $modal.find('label[for=password] span').hide()
+            $modal.find('label[for=password-confirmation] span').hide()
             $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-user-title').text('Update User');
             $.get('{{route("users.detail")}}',{id:id}).done((res) => {
