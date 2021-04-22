@@ -54,6 +54,7 @@ class EventService {
                         $event_item['borderColor'] = '#00cf0e';
                         break;
                     case 'biweekly':
+                        $event_item['rrule']['freq'] = 'weekly';
                         $event_item['rrule']['interval'] = 2;
                         $event_item['backgroundColor'] = '#03bafc';
                         $event_item['borderColor'] = '#03bafc';

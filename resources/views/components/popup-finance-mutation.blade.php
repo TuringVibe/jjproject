@@ -127,6 +127,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
                 $modal.find('#mutation-date').val(res.mutation_date);
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
+                $modal.find('#currency').val(res.currency);
                 $modal.find('#nominal').val(res.nominal);
                 $modal.find('#project-id').val(res.project_id).trigger('change');
                 $modal.find('#notes').val(res.notes);
