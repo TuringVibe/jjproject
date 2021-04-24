@@ -1,6 +1,7 @@
 @extends('layouts.master')
 
 @push('head')
+    <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
@@ -226,8 +227,7 @@
 @push('scripts')
     <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
     <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
     <script src="{{asset('lib/chart.js-3.0.1/chart.min.js')}}"></script>
     <script>
         var currency = getQueryVariable('currency');

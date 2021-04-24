@@ -2,6 +2,7 @@
 
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
         .label-list {
@@ -49,8 +50,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
     <script>
         function deleteData(elem) {
             Swal.fire({
