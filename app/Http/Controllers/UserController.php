@@ -40,7 +40,7 @@ class UserController extends Controller {
     public function save(ValidateUser $request) {
         $attr = $request->validated();
         if(isset($attr['img'])) {
-            $attr['img_path'] = $request->file('img')->storePublicly('users');
+            $attr['img_path'] = $request->file('img')->storePublicly('users','public');
         }
         if(array_key_exists('img',$attr)) unset($attr['img']);
         $result = $this->user_service->save($attr);
