@@ -48,7 +48,11 @@
                         </div>
                         <div class="col-sm-3 form-group">
                             <label for="currency">Currency <span class="text-danger">*</span></label>
-                            <input type="text" name="currency" id="currency" class="form-control" aria-describedby="validate-currency">
+                            <select id="currency" name="currency" class="form-control" aria-describedby="validate-currency">
+                                <option value="usd">USD</option>
+                                <option value="cny">CNY</option>
+                                <option value="idr">IDR</option>
+                            </select>
                             <div id="validate-currency" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-6 form-group">
