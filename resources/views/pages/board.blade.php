@@ -314,7 +314,7 @@
                 });
         }
 
-        function loadCards() {
+        function loadCards(firstLoad = false) {
             $.get(@json(route('tasks.cards')), {
                 project_id: getQueryVariable('id')
             }).done(function(res) {
@@ -345,9 +345,11 @@
                     if(e != undefined)
                         refreshCard(e.detail.task_id);
                 });
-                var task_id = getQueryVariable('task_id');
-                if(task_id != false) {
-                    $('.task-card[data-id='+task_id+']').click();
+                if(firstLoad) {
+                    var task_id = getQueryVariable('task_id');
+                    if(task_id != false) {
+                        $('.task-card[data-id='+task_id+']').click();
+                    }
                 }
             }).fail(function(jqXHR) {
                 Swal.fire({
@@ -439,7 +441,7 @@
 @endpush
 
 @push('ready-scripts')
-    loadCards();
+    loadCards(true);
 
     $('.board').on('list-mutated',function(e) {
         loadCards();

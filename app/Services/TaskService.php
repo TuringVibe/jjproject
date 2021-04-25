@@ -34,13 +34,10 @@ class TaskService {
                         $query_builder->where('due_date','<=',$val);
                     break;
                     case 'user_id':
-                        $query_builder->whereHas('users',function(Builder $query) use($val){
-                            $query->where('users.id',$val);
-                        });
-                    break;
-                    case 'project_id':
-                        $query_builder->whereHas('project', function(Builder $query) use($val){
-                            $query->where('projects.id',$val);
+                        $query_builder->where(function($query) use($val){
+                            $query->whereHas('users',function(Builder $query) use($val){
+                                $query->where('users.id',$val);
+                            })->orWhere('tasks.created_by',$val);
                         });
                     break;
                     case 'project_label_id':
