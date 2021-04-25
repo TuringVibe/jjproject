@@ -63,8 +63,20 @@ class ProjectController extends Controller
     }
 
     public function save(ValidateProject $request) {
-        if(!Gate::any(['update','create'],Project::find($request->id)))
-            return Response::deny(__('response.not_authorized'));
+        if($request->id == null
+        && !($response = Gate::inspect('create',App\Models\Project::class))->allowed()) {
+            return response()->json([
+                'status' => false,
+                'message' => $response->message()
+            ],403);
+        }
+        if($request->id != null
+        && !($response = Gate::inspect('update',Project::find($request->id)))->allowed()) {
+            return response()->json([
+                'status' => false,
+                'message' => $response->message()
+            ],403);
+        }
 
         $result = $this->project_service->save($request->validated());
         return $result;
