@@ -27,6 +27,9 @@
             padding-top: 1rem;
             padding-bottom: 1rem;
         }
+        .comment p.text {
+            white-space: pre-line;
+        }
         .comment .user-img {
             width: 4rem;
             height: 4rem;
