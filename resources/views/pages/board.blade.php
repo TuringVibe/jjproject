@@ -486,7 +486,6 @@
             $('.placeholder').remove();
             $taskCard.before($placeholder);
             var destOrder = $taskCard.data('order');
-            if(destOrder != 1) destOrder = destOrder - 1;
             $placeholder.data('dest-order',destOrder);
             $placeholder.data('dest-status',$taskCard.data('status'));
         } else if($(e.target).parent().is('.task-card')){
@@ -505,17 +504,16 @@
         }
     }).on('drop',function(e) {
         e.preventDefault();
-        console.log('drop');
         var src = JSON.parse(e.originalEvent.dataTransfer.getData('text'));
         $placeholder = $(this).find('.placeholder');
         var destOrder = $placeholder.data('dest-order');
         var destStatus = $placeholder.data('dest-status');
         if(destOrder != $dragged.data('order') || destStatus != $dragged.data('status')) {
-            if(saveTaskCard(src.id,destStatus,destOrder)) {
-                $placeholder.after($dragged);
+            saveTaskCard(src.id,destStatus,destOrder).then((res) => {
                 document.querySelector('.board').dispatchEvent(new CustomEvent('list-mutated'))
-            }
+            });
         }
+        $placeholder.after($dragged);
         $('.placeholder').remove();
     });
 @endpush

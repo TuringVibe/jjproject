@@ -136,7 +136,7 @@
         }
     </style>
 @endpush
-<div id="popup-card" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="task-card-title" aria-hidden="true">
+<div id="popup-card" class="modal fade" data-backdrop="static" data-keyboard="true" tabindex="-1" aria-labelledby="task-card-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body">
