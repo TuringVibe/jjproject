@@ -409,6 +409,7 @@
         }
 
         function openModal() {
+            $('#popup-task').removeData();
             $('#popup-task').modal('show');
         }
 
@@ -446,6 +447,7 @@
     $('.board').on('list-mutated',function(e) {
         loadCards();
     }).on('click','.edit',function(e) {
+        $('#popup-task').removeData();
         $('#popup-task').data('id',$(this).data('id'));
         $('#popup-task').data('action',$(this).data('action'));
         $('#popup-task').modal("show");
