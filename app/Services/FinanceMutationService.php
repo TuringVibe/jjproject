@@ -118,12 +118,12 @@ class FinanceMutationService {
             }
         }
         $query_builder = $query_builder->orderBy('mutation_date','desc');
-        $finance_mutations = [];
+        $finance_mutations = collect();
         foreach($query_builder->cursor() as $mutation) {
             $convert_to_usd = $mutation->{$mutation->currency."_usd"} ?? 1;
             $convert_to_cny = $mutation->{$mutation->currency."_cny"} ?? 1;
             $convert_to_idr = $mutation->{$mutation->currency."_idr"} ?? 1;
-            $finance_mutations[] = [
+            $finance_mutations->push([
                 'id' => $mutation->id,
                 'mutation_date' => Carbon::parse($mutation->mutation_date)->format('Y-m-d'),
                 'name' => $mutation->name,
@@ -133,7 +133,7 @@ class FinanceMutationService {
                 'mode' => $mutation->mode,
                 'labels' => $mutation->labels,
                 'project' => $mutation->project
-            ];
+            ]);
         }
         return $finance_mutations;
     }

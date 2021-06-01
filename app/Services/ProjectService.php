@@ -128,7 +128,7 @@ class ProjectService {
             });
             return true;
         }catch(\Exception $e) {
-            throw new Exception("Failed to delete data", 500);
+            throw new Exception(__("response.delete_failed"), 500);
         }
     }
 
