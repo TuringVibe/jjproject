@@ -48,7 +48,7 @@ class ValidateFinanceMutation extends FormRequest
             'mutation_date' => ['required','date'],
             'name' => ['required','string','max:100'],
             'currency' => ['required','in:usd,cny,idr'],
-            'nominal' => ['required','integer'],
+            'nominal' => ['required','numeric'],
             'mode' => ['required','in:debit,credit'],
             'project_id' => ['nullable','integer',Rule::exists(Project::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
