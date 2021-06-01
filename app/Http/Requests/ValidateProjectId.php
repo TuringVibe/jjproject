@@ -20,7 +20,7 @@ class ValidateProjectId extends FormRequest
 
     public function prepareForValidation() {
         $this->merge([
-            'id' => trim(strip_tags($this->id))
+            'id' => $this->id == null ? null : trim(strip_tags($this->id))
         ]);
     }
 
