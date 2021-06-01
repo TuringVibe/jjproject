@@ -11,6 +11,16 @@
             border-radius: 5px;
             color: white;
         }
+        .buy-price {
+            font-size: 1rem;
+        }
+        .last-price{
+            font-size: 1rem;
+        }
+        .last-change{
+            margin-top: 10px;
+            font-size: .8rem;
+        }
     </style>
 @endpush
 
@@ -41,7 +51,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Total Earn</h5>
-                        <p class="h5">{!! $finance_statistic['currency'] !!} {{$finance_statistic['total_earn']}}</p>
+                        <p class="h5">{!! $mutation_statistic['currency'] !!} {{$mutation_statistic['total_earning']}}</p>
                     </div>
                 </div>
             </div>
@@ -49,7 +59,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Total Debit</h5>
-                        <p class="h5">{!! $finance_statistic['currency'] !!} {{$finance_statistic["total_debit"]}}</p>
+                        <p class="h5">{!! $mutation_statistic['currency'] !!} {{$mutation_statistic["total_debit"]}}</p>
                     </div>
                 </div>
             </div>
@@ -57,15 +67,34 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Total Credit</h5>
-                        <p class="h5">{!! $finance_statistic['currency'] !!} {{$finance_statistic["total_credit"]}}</p>
+                        <p class="h5">{!! $mutation_statistic['currency'] !!} {{$mutation_statistic["total_credit"]}}</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="row flex-wrap">
+            @foreach ($asset_statistic as $statistic)
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">{{$statistic['name']}}</h5>
+                            <span class="caption {{$statistic['percentage'] > 0 ? 'text-success' : 'text-danger'}}">({{$statistic["percentage"]}} %)</span>
+                        </div>
+                        <div class="buy-price">Buy : {!! $statistic['currency'] !!} {{$statistic["buy_price"]}}</div>
+                        <div class="last-price">Latest : {!! $statistic['currency'] !!} {{$statistic["latest_price"]}}</div>
+                        <div class="last-change">Last change : {{$statistic["latest_price_change_datetime"]}}</div>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
         <div class="row mb-3">
             <div class="col">
                 <div class="card">
-                    <h4 class="card-header">Statistic</h4>
+                    <h4 class="card-header">Mutation Statistic</h4>
                     <div class="card-body">
                         <div class="form-row">
                             <div class="form-group col-auto">
@@ -90,6 +119,36 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <div class="card">
+                    <h4 class="card-header">Asset Statistic</h4>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group col-auto">
+                                <label for="date-range">Date Range</label>
+                                <input type="text" class="form-control date-picker" id="date-range-asset" value="">
+                            </div>
+                            <div class="form-group col-auto">
+                                <label for="periode">Periode</label>
+                                <select class="form-control" id="periode-asset">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-auto align-self-end">
+                                <button id="show-asset" type="button" class="btn btn-default">Show</button>
+                            </div>
+                        </div>
+                        <div>
+                            <canvas id="chart-asset"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -161,6 +220,10 @@
         updateChart();
     });
 
+    $('#show-asset').on('click',(e) => {
+        updateChartAsset();
+    });
+
     var table = $('#list').DataTable({
         order: [],
         paging: false,
@@ -222,6 +285,7 @@
     });
 
     updateChart();
+    updateChartAsset();
 @endpush
 
 @push('scripts')
@@ -232,6 +296,7 @@
     <script>
         var currency = getQueryVariable('currency');
         currency = currency == false ? 'usd' : currency;
+
         var chart = null;
         if($('#chart').length) {
             var ctx = $('#chart');
@@ -240,7 +305,7 @@
                 data: {
                     datasets: [
                         {
-                            label: 'Earn',
+                            label: 'Earning',
                             data: [],
                             type: 'line',
                             borderColor: '#007bff',
@@ -262,6 +327,28 @@
                         }
                     ],
                     labels: []
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            position: 'nearest'
+                        }
+                    }
+                }
+            });
+        }
+
+        var chartAsset = null;
+        if($('#chart-asset').length) {
+            var ctxAsset = $('#chart-asset');
+            chartAsset = new Chart(ctxAsset,{
+                type: 'line',
+                options: {
+                    plugins: {
+                        tooltip: {
+                            position: 'nearest'
+                        }
+                    }
                 }
             });
         }
@@ -280,11 +367,40 @@
                 });
                 for(data of res) {
                     chart.data.labels.push(data.label);
-                    chart.data.datasets[0].data.push(data.total_earn);
+                    chart.data.datasets[0].data.push(data.total_earning);
                     chart.data.datasets[1].data.push(data.total_debit);
                     chart.data.datasets[2].data.push(data.total_credit);
                 }
                 chart.update();
+            });
+        }
+
+        function updateChartAsset() {
+            var dateRange = $('#date-range-asset').val();
+            var periode = $('#periode-asset').val();
+            $.get(@json(route("finance-dashboard.asset-periodic-statistic")),{
+                currency: currency,
+                date_range: dateRange,
+                periode: periode
+            }).done(function(res){
+                chartAsset.data.labels = [];
+                chartAsset.data.datasets = [];
+                chartAsset.data.labels = res.labels;
+                for(idx in res.datasets) {
+                    var r = Math.floor(Math.random() * 255);
+                    var g = Math.floor(Math.random() * 255);
+                    var b = Math.floor(Math.random() * 255);
+                    chartAsset.data.datasets.push(
+                        {
+                            label: res.datasets[idx],
+                            backgroundColor: 'rgb('+r+','+g+','+b+')'
+                        }
+                    );
+                }
+                for(idx in res.data) {
+                    chartAsset.data.datasets[idx].data = res.data[idx];
+                }
+                chartAsset.update();
             });
         }
     </script>

@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class AssetPriceChange extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'finance_asset_id',
+        'change_datetime',
+        'price_per_unit',
+        'currency',
+        'usd_cny',
+        'usd_idr',
+        'cny_usd',
+        'cny_idr',
+        'idr_usd',
+        'idr_cny',
+        'conversion_datetime',
+        'created_by',
+        'updated_by'
+    ];
+    protected $hidden = [
+        'deleted_at',
+        'deleted_by'
+    ];
+    protected $casts = [
+        'finance_asset_id' => 'integer',
+        'change_datetime' => 'datetime',
+        'price_per_unit' => 'decimal:3',
+        'usd_cny' => 'decimal:15',
+        'usd_idr' => 'decimal:15',
+        'cny_usd' => 'decimal:15',
+        'cny_idr' => 'decimal:15',
+        'idr_usd' => 'decimal:15',
+        'idr_cny' => 'decimal:15',
+        'conversion_datetime' => 'datetime',
+        'created_by' => 'integer',
+        'updated_by' => 'integer',
+        'deleted_by' => 'integer'
+    ];
+
+    public function finance_asset() {
+        return $this->belongsTo(FinanceAsset::class);
+    }
+}

@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\AssetPriceChangeController;
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FinanceAssetController;
 use App\Http\Controllers\FinanceDashboardController;
 use App\Http\Controllers\FinanceLabelController;
 use App\Http\Controllers\FinanceMutationController;
@@ -139,6 +141,7 @@ Route::middleware(['auth'])->group(function() {
             Route::get('/',[FinanceDashboardController::class, 'dashboard'])->name('dashboard');
             Route::get('/data-by-label', [FinanceDashboardController::class, "dataByLabel"])->name('data-by-label');
             Route::get('/periodic-statistic', [FinanceDashboardController::class, "periodicStatistic"])->name('periodic-statistic');
+            Route::get('/asset-periodic-statistic', [FinanceDashboardController::class, "assetPeriodicStatistic"])->name('asset-periodic-statistic');
         });
 
         Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {
@@ -152,6 +155,20 @@ Route::middleware(['auth'])->group(function() {
                 Route::get('/edit',[FinanceMutationScheduleController::class, "edit"])->name('edit');
                 Route::post('/save',[FinanceMutationScheduleController::class, "save"])->name('save');
                 Route::post('/delete',[FinanceMutationScheduleController::class, "delete"])->name('delete');
+            });
+        });
+
+        Route::prefix('finance-assets')->name('finance-assets.')->group(function() {
+            Route::get('/list',[FinanceAssetController::class, "list"])->name('list');
+            Route::get('/data',[FinanceAssetController::class, "data"])->name('data');
+            Route::get('/edit',[FinanceAssetController::class, "edit"])->name('edit');
+            Route::post('/save',[FinanceAssetController::class, "save"])->name('save');
+            Route::post('/delete',[FinanceAssetController::class, "delete"])->name('delete');
+            Route::prefix('/price-changes')->name('price-changes.')->group(function() {
+                Route::get('/data',[AssetPriceChangeController::class, "data"])->name('data');
+                Route::get('/edit',[AssetPriceChangeController::class, "edit"])->name('edit');
+                Route::post('/save',[AssetPriceChangeController::class, "save"])->name('save');
+                Route::post('/delete',[AssetPriceChangeController::class, "delete"])->name('delete');
             });
         });
 
