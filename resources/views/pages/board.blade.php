@@ -72,13 +72,13 @@
             padding: .5rem;
             min-height: 75px;
             border-radius: 5px;
-            background-color: #b6c7b5;
+            background-color: var(--task-list-bg-color);
         }
 
         .task-card {
             margin-top: .5rem;
             border-radius: 5px;
-            background-color: white;
+            background-color: var(--task-card-bg-color);
             min-height: 100px;
             height: auto;
             padding: 1rem;
@@ -153,7 +153,7 @@
             padding-right: .3rem;
             font-size: .75rem;
             font-weight: bold;
-            color: white;
+            color: var(--task-priority-color);
         }
 
         .task-priority.low {

@@ -1,0 +1,42 @@
+:root {
+    --header-height: 3.5rem;
+    --footer-height: 3rem;
+    --container-height: calc(100vh - var(--header-height) - var(--footer-height));
+    --sidebar-height: calc(100vh - var(--footer-height));
+
+    --color-pallete-main: #fcfcfc;
+    --color-pallete-sec1: #f8f9fa;
+    --color-pallete-sec2: #12c73f;
+    --color-pallete-sec3: #3d3d3d;
+    --color-pallete-sec4: #e3e3e3;
+    --color-pallete-sec5: #ffffff;
+    --color-pallete-sec6: #9c9a9a;
+    --color-pallete-sec7: #b6c7b5;
+    --shadow: #4c4c4c;
+
+    --color-font-default: var(--color-pallete-sec3);
+    --com-bg-color-default: var(--color-pallete-sec2);
+    --com-color-default: var(--color-pallete-sec5);
+    --color-link: var(--color-pallete-sec2);
+    --bg-color: var(--color-pallete-main);
+
+
+    --table-icon-color: var(--com-bg-color-default);
+    --table-icon-bg-color: var(--com-color-default);
+
+    --sidebar-bg-color: var(--color-pallete-sec1);
+    --sidebar-heading-color: var(--color-pallete-sec3);
+    --sidebar-menu-color: var(--color-pallete-sec3);
+    --sidebar-menu-color-hover: var(--com-color-default);
+    --sidebar-menu-bg-color-hover: var(--com-bg-color-default);
+    --sidebar-menu-bg-color-active: var(--com-bg-color-default);
+
+    --modal-bg-color: var(--color-pallete-sec1);
+
+    --task-list-bg-color: var(--color-pallete-sec7);
+    --task-card-bg-color: var(--com-color-default);
+    --task-card-info-color: var(--color-pallete-sec6);
+    --task-priority-color: var(--color-pallete-sec5);
+
+    --footer-bg-color: var(--color-pallete-sec4);
+}

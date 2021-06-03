@@ -78,7 +78,6 @@
         }
         .subtasks button.add-subtask {
             border: 1px dashed #dee2e6;
-            background-color: white;
             color: #9c9a9a;
         }
 

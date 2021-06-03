@@ -21,17 +21,17 @@
             background-size: cover;
             background-position: center;
         }
-        .user-img:not(:first-child) {
-            margin-left: -10px;
-        }
         .label-list {
             display: inline-block;
             padding: .3rem;
             border-radius: 5px;
             color: white;
         }
-        .label-list:not(:first-child) {
-            margin-left: 5px;
+        .label-list:not(:last-child) {
+            margin-right: 5px;
+        }
+        table#list.dataTable thead th{
+            text-align: center;
         }
         table#list.dataTable tbody tr{
             cursor: pointer;
@@ -93,12 +93,21 @@
                 <table id="list" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Total Tasks</th>
-                            <th>Users</th>
-                            <th>Labels</th>
-                            <th>Status</th>
-                            <th>Action</th>
+                            <th rowspan="2">Name</th>
+                            <th colspan="7">Tasks</th>
+                            <th rowspan="2">Users</th>
+                            <th rowspan="2">Labels</th>
+                            <th rowspan="2">Status</th>
+                            <th rowspan="2">Action</th>
+                        </tr>
+                        <tr>
+                            <th>Todo</th>
+                            <th>In Progress</th>
+                            <th>Done</th>
+                            <th>Done in<br>7 Days</th>
+                            <th>Done in<br>30 Days</th>
+                            <th>Done in<br>365 Days</th>
+                            <th>Total</th>
                         </tr>
                     </thead>
                 </table>
@@ -186,10 +195,13 @@
         },
         columns: [
             {data: 'name'},
-            {
-                data: 'tasks_count',
-                width: "100px",
-            },
+            {data: 'tasks_todo'},
+            {data: 'tasks_inprogress'},
+            {data: 'tasks_done'},
+            {data: 'tasks_done_7_days', width: '57px'},
+            {data: 'tasks_done_30_days', width: '57px'},
+            {data: 'tasks_done_365_days', width: '57px'},
+            {data: 'tasks_count'},
             {
                 data: null,
                 render: (data, type, row, meta) => {
@@ -215,14 +227,10 @@
                     return html;
                 }
             },
-            {
-                data: 'status',
-                width: "100px",
-            },
+            {data: 'status'},
             {
                 visible: @json(auth()->user()->role == "admin"),
                 data: null,
-                width: "90px",
                 render: (data, type, row, meta) => {
                     htmlUpdate = '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-project" data-action="edit" data-id="'+row.id+'"><i class="fas fa-pen"></i></button>';
                     htmlDelete = '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';

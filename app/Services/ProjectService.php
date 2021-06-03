@@ -47,8 +47,15 @@ class ProjectService {
         }
         $projects = $query_builder->orderBy('created_at','desc')
             ->select('id','name','status')
-            ->withCount('tasks')
+            ->with('tasks')
             ->get()->map(function($item,$key){
+                $item['tasks_todo'] = $item->tasks()->todo()->count();
+                $item['tasks_inprogress'] = $item->tasks()->inProgress()->count();
+                $item['tasks_done'] = $item->tasks()->done()->count();
+                $item['tasks_count'] = $item->tasks()->count();
+                $item['tasks_done_7_days'] = $item->tasks_done_count(7);
+                $item['tasks_done_30_days'] = $item->tasks_done_count(30);
+                $item['tasks_done_365_days'] = $item->tasks_done_count(365);
                 $item['can_update'] = request()->user()->can('update',$item);
                 $item['can_delete'] = request()->user()->can('delete',$item);
                 return $item;

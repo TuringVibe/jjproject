@@ -1,26 +1,3 @@
-:root {
-    --header-height: 3.5rem;
-    --footer-height: 3rem;
-    --container-height: calc(100vh - var(--header-height) - var(--footer-height));
-    --sidebar-height: calc(100vh - var(--footer-height));
-
-    --color-font-default: #3d3d3d;
-    --com-bg-color-default: #12c73f;
-    --com-color-default: #ffffff;
-    --color-link: #12c73f;
-    --bg-color: #fcfcfc;
-
-    --table-icon-color: var(--com-bg-color-default);
-    --table-icon-bg-color: var(--com-color-default);
-
-    --sidebar-bg-color: #f8f9fa;
-    --sidebar-heading-color: #3d3d3d;
-    --sidebar-menu-color: #2d2d2d;
-    --sidebar-menu-color-hover: var(--com-color-default);
-    --sidebar-menu-bg-color-hover: var(--com-bg-color-default);
-    --sidebar-menu-bg-color-active: var(--com-bg-color-default);
-}
-
 html, body {
     padding: 0;
     margin: 0;
@@ -150,10 +127,14 @@ button.btn.btn-negative {
     min-height: var(--container-height);
 }
 
+.modal-content {
+    background-color: var(--modal-bg-color);
+}
+
 .card {
-    background-color: white;
+    background-color: var(--card-bg-color);
     border: none;
-    box-shadow: 0px 0px 14px -5px #d6d4d4;
+    box-shadow: 0px 0px 14px -5px var(--shadow);
 }
 
 .card .card-header {
@@ -171,7 +152,11 @@ footer {
     justify-content: center;
     align-items: center;
     color: var(--color-font-default);
-    background-color: #e3e3e3;
+    background-color: var(--footer-bg-color);
+}
+
+table.table {
+    color: var(--color-font-default);
 }
 
 .logout {

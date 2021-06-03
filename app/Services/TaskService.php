@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Events\TaskSaved;
 use App\Models\Task;
 use Carbon\Carbon;
 use Exception;
@@ -98,12 +99,15 @@ class TaskService {
     }
 
     public function move($project_id, $task_id, $status_destination, $order_destination) {
+        $old_status = null;
+
         $orders = Task::whereNull('deleted_at')
             ->where('project_id',$project_id)
             ->orderBy('order','asc')
             ->select('id','status','order','updated_at')
-            ->get()->map(function($item, $key) use($task_id, $status_destination, $order_destination){
+            ->get()->map(function($item, $key) use($task_id, $status_destination, $order_destination, &$old_status){
                 if($item['id'] == $task_id) {
+                    $old_status = $item['status'];
                     $now = Carbon::now();
                     $item['order'] = (int)$order_destination;
                     $item['status'] = $status_destination;
@@ -131,6 +135,7 @@ class TaskService {
             DB::transaction(function () use($update_query, $user_id){
                 DB::update($update_query,[$user_id]);
             });
+            TaskSaved::dispatch($project_id, $task_id, $old_status, $status_destination);
             $result = true;
         }catch(\Exception $e){
             throw new Exception('Failed: '.$e->getMessage(),500);
@@ -170,6 +175,7 @@ class TaskService {
                     if(!empty($user_ids)) {
                         $task->users()->sync($user_ids);
                     }
+                    TaskSaved::dispatch($task->project_id, $task->id, null, $task->status);
                 }
             });
             return $task;

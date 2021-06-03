@@ -1,0 +1,68 @@
+:root {
+    --header-height: 3.5rem;
+    --footer-height: 3rem;
+    --container-height: calc(100vh - var(--header-height) - var(--footer-height));
+    --sidebar-height: calc(100vh - var(--footer-height));
+
+    /* LIGHT
+    --color-font-default: #3d3d3d;
+    --com-bg-color-default: #12c73f;
+    --com-color-default: #ffffff;
+    --color-link: #12c73f;
+    --bg-color: #fcfcfc;
+
+    --card-bg-color: #ffffff;
+
+    --table-icon-color: var(--com-bg-color-default);
+    --table-icon-bg-color: var(--com-color-default);
+
+    --sidebar-bg-color: #f8f9fa;
+    --sidebar-heading-color: #3d3d3d;
+    --sidebar-menu-color: #2d2d2d;
+    --sidebar-menu-color-hover: var(--com-color-default);
+    --sidebar-menu-bg-color-hover: var(--com-bg-color-default);
+    --sidebar-menu-bg-color-active: var(--com-bg-color-default);
+
+    --task-card-info-color: #9c9a9a;
+    --footer-bg-color: #e3e3e3;
+    */
+
+    /* DARK */
+    --color-pallete-main: #1b262c;
+    --color-pallete-sec1: #0f4c75;
+    --color-pallete-sec2: #3282b8;
+    --color-pallete-sec3: #bbe1fa;
+    --color-pallete-sec4: #ffffff;
+    --shadow: #4c4c4c;
+
+    --color-font-default: var(--color-pallete-sec3);
+    --com-bg-color-default: var(--color-pallete-sec2);
+    --com-color-default: var(--color-pallete-sec3);
+    --color-link: var(--color-pallete-sec2);
+    --bg-color: var(--color-pallete-main);
+
+    --content-header-bg-color: var(--color-pallete-main);
+    --content-header-color: var(--color-pallete-sec3);
+    --content-header-breadcrumb-active: var(--cikir-pallete-sec1);
+
+    --card-bg-color: var(--color-pallete-main);
+
+    --table-icon-color: var(--com-bg-color-default);
+    --table-icon-bg-color: var(--com-color-default);
+
+    --sidebar-bg-color: var(--color-pallete-sec1);
+    --sidebar-heading-color: var(--color-pallete-sec3);
+    --sidebar-menu-color: var(--color-pallete-sec3);
+    --sidebar-menu-color-hover: var(--com-color-default);
+    --sidebar-menu-bg-color-hover: var(--com-bg-color-default);
+    --sidebar-menu-bg-color-active: var(--com-bg-color-default);
+
+    --modal-bg-color: var(--color-pallete-sec1);
+
+    --task-list-bg-color: var(--color-pallete-sec1);
+    --task-card-bg-color: var(--color-pallete-sec2);
+    --task-card-info-color: var(--color-pallete-sec3);
+    --task-priority-color: var(--color-pallete-sec4);
+
+    --footer-bg-color: var(--color-pallete-main);
+}

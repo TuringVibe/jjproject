@@ -17,6 +17,7 @@ use App\Http\Controllers\SubtaskController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskFileController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,7 @@ Route::middleware(['guest'])->group(function() {
 });
 
 Route::middleware(['auth'])->group(function() {
+    Route::post('/themes/change',[ThemeController::class, "change"])->name("themes.change");
     Route::post('/logout', [AuthenticationController::class, "logout"])->name("logout");
 
     Route::prefix('projects')->name('projects.')->group(function() {

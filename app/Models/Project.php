@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Project extends Model
 {
@@ -49,6 +49,25 @@ class Project extends Model
 
     public function tasks() {
         return $this->hasMany(Task::class);
+    }
+
+    public function task_status_logs(){
+        return $this->hasMany(TaskStatusLog::class);
+    }
+
+    public function tasks_done_count($total_days){
+        $latestLogs = $this->task_status_logs()
+            ->select('task_id',DB::raw('MAX(created_at) as last_log'))
+            ->groupBy('task_id');
+
+        return $this->task_status_logs()
+            ->joinSub($latestLogs, 'latest_logs', function($join){
+                $join->on('task_status_logs.task_id','=','latest_logs.task_id');
+            })
+            ->whereRaw('task_status_logs.created_at = latest_logs.last_log')
+            ->where('task_status_logs.last_status','done')
+            ->whereRaw('TIMESTAMPDIFF(DAY,latest_logs.last_log,CURDATE()) <= ?',[$total_days])
+            ->count();
     }
 
     public function comments() {
