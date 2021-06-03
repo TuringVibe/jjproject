@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/regular.min.css')}}">
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/brands.min.css')}}">
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/solid.min.css')}}">
-    <link rel="stylesheet" href="{{session('theme')['obj']['css_path']}}">
+    <link rel="stylesheet" href="{{asset(session('theme')['obj']['css_path'])}}">
     <link rel="stylesheet" href="{{asset('css/general.css')}}">
     @stack('head')
 </head>
