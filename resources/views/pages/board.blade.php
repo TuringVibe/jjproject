@@ -184,7 +184,7 @@
         .task-duedate,
         .task-total-files,
         .task-checklist {
-            color: #9c9a9a;
+            color: var(--task-card-info-color);
         }
 
         .placeholder {

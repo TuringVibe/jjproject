@@ -122,7 +122,6 @@
         }
         .file .file-info .size {
             font-size: .8rem;
-            color: #474745;
         }
 
         .action {
@@ -132,6 +131,11 @@
         .action button {
             margin-left: 5px;
             padding: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            background-color: var(--com-bg-color-default);
+            color: var(--com-color-default);
         }
     </style>
 @endpush

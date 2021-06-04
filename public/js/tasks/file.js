@@ -4,7 +4,7 @@ function fileHtml() {
         '<span class="file-icon"></span>'+
         '<div class="file-info">'+
             '<span class="filename"></span>'+
-            '<span class="size"></span>'+
+            '<span class="size caption"></span>'+
         '</div>'+
         '<div class="action">'+
             '<button class="btn btn-negative download"><i class="fas fa-download"></i></button>'+
