@@ -3,7 +3,7 @@
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{asset('lib/daterangepicker-3.1/daterangepicker.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
@@ -24,21 +24,26 @@
             background-size: cover;
             background-position: center;
         }
+
         .user-img:not(:first-child) {
             margin-left: -10px;
         }
+
         .label-list {
             display: inline-block;
             padding: .3rem;
             border-radius: 5px;
             color: white;
         }
+
         .label-list:not(:first-child) {
             margin-left: 5px;
         }
-        table#list.dataTable tbody tr{
+
+        table#list.dataTable tbody tr {
             cursor: pointer;
         }
+
     </style>
 @endpush
 
@@ -54,7 +59,7 @@
                         <select id="filter-project" class="select2">
                             <option value="">-- All Project --</option>
                             @foreach ($projects as $project)
-                                <option value="{{$project['id']}}">{{$project['name']}}</option>
+                                <option value="{{ $project['id'] }}">{{ $project['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -63,7 +68,7 @@
                         <select id="filter-project-label" class="select2">
                             <option value="">-- All Project Label --</option>
                             @foreach ($project_labels as $label)
-                                <option value="{{$label['id']}}">{{$label['name']}}</option>
+                                <option value="{{ $label['id'] }}">{{ $label['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -71,26 +76,18 @@
                         <label for="filter-duedate-range">Due Date Range</label>
                         <input id="filter-duedate-range" class="form-control">
                     </div>
-                    @can('viewAny',App\Models\Task::class)
-                    <div class="col-auto form-group">
-                        <label for="filter-user">User</label>
-                        <select id="filter-user" class="select2">
-                            <option value="">-- All User --</option>
-                            @foreach ($users as $user)
-                                <option value="{{$user['id']}}">{{$user['firstname'].' '.$user['lastname']}}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @can('viewAny', App\Models\Task::class)
+                        <div class="col-auto form-group">
+                            <label for="filter-user">User</label>
+                            <select id="filter-user" class="select2">
+                                <option value="">-- All User --</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user['id'] }}">{{ $user['firstname'] . ' ' . $user['lastname'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     @endcan
-                    <div class="col-auto form-group">
-                        <label for="filter-status">Status</label>
-                        <select id="filter-status" class="form-control">
-                            <option value="">-- All Status --</option>
-                            <option value="todo">To Do</option>
-                            <option value="inprogress">In Progress</option>
-                            <option value="done">Done</option>
-                        </select>
-                    </div>
                     <div class="col-auto form-group">
                         <label for="filter-priority">Priority</label>
                         <select id="filter-priority" class="form-control">
@@ -99,6 +96,23 @@
                             <option value="medium">Medium</option>
                             <option value="high">High</option>
                         </select>
+                    </div>
+                    <div class="col-auto form-group">
+                        <label for="filter-status">Status</label>
+                        <div class="my-2">
+                            <div class="form-check form-check-inline">
+                                <input id="status-todo" name="status[]" value="todo" type="checkbox" class="form-check-input" checked>
+                                <label for="status-todo" class="form-check-label">To do</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input id="status-inprogress" name="status[]" value="inprogress" type="checkbox" class="form-check-input" checked>
+                                <label for="status-inprogress" class="form-check-label">In Progress</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input id="status-done" name="status[]" value="done" type="checkbox" class="form-check-input">
+                                <label for="status-done" class="form-check-label">Done</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-auto form-group">
                         <label for="filter-name">Name</label>
@@ -126,10 +140,10 @@
 @endsection
 
 @push('scripts')
-    <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
-    <script src="{{asset('lib/select2-4.0.13/js/select2.min.js')}}"></script>
-    <script src="{{asset('lib/daterangepicker-3.1/moment.min.js')}}"></script>
-    <script src="{{asset('lib/daterangepicker-3.1/daterangepicker.js')}}"></script>
+    <script src="{{ asset('lib/DataTables/datatables.min.js') }}"></script>
+    <script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
+    <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
+    <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
     <script>
         function deleteData(elem) {
             Swal.fire({
@@ -144,13 +158,15 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         method: 'POST',
-                        url: '{{route("project-labels.delete")}}',
-                        data: { id: $(elem).data('id') },
+                        url: '{{ route('project-labels.delete') }}',
+                        data: {
+                            id: $(elem).data('id')
+                        },
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         }
                     }).done((res) => {
-                        if(res == true) {
+                        if (res == true) {
                             Swal.fire(
                                 'Deleted!',
                                 'Your data has been deleted.',
@@ -174,6 +190,7 @@
                 }
             });
         }
+
     </script>
 @endpush
 
@@ -201,12 +218,12 @@
         startDate: start,
         endDate: end,
         ranges: {
-           'Today': [moment(), moment()],
-           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-           'This Month': [moment().startOf('month'), moment().endOf('month')],
-           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         }
     });
 
@@ -224,17 +241,20 @@
         searching: false,
         processing: true,
         ajax: {
-            url: '{{ route('tasks.data') }}',
-            dataSrc: '',
-            data: function(d) {
-                d.project_id = $('#filter-project').val();
-                d.project_label_id = $('#filter-project-label').val();
-                d.due_date_range = $('#filter-duedate-range').val();
-                d.user_id = $('#filter-user').val();
-                d.status = $('#filter-status').val();
-                d.priority = $('#filter-priority').val();
-                d.name = $('#filter-name').val();
-            }
+        url: '{{ route('tasks.data') }}',
+        dataSrc: '',
+        data: function(d) {
+            d.project_id = $('#filter-project').val();
+            d.project_label_id = $('#filter-project-label').val();
+            d.due_date_range = $('#filter-duedate-range').val();
+            d.user_id = $('#filter-user').val();
+            d.status = [];
+            $('[name="status[]"]:checked').each(function() {
+                d.status.push(this.value)
+            });
+            d.priority = $('#filter-priority').val();
+            d.name = $('#filter-name').val();
+        }
         },
         columns: [
             {data: 'name'},

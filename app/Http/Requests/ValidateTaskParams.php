@@ -28,7 +28,7 @@ class ValidateTaskParams extends FormRequest
             'due_date_from' => $due_dates == null ? null : trim(strip_tags($due_dates[0])),
             'due_date_to' => $due_dates == null ? null : trim(strip_tags($due_dates[1])),
             'user_id' => $this->user_id == null ? null : trim(strip_tags($this->user_id)),
-            'status' => $this->status == null ? null : trim(strip_tags($this->status)),
+            'status' => $this->status == null ? null : array_map(function($val){return trim(strip_tags($val));},$this->status),
             'priority' => $this->priority == null ? null : trim(strip_tags($this->priority)),
             'name' => $this->name == null ? null : trim(strip_tags($this->name))
         ]);
@@ -53,7 +53,7 @@ class ValidateTaskParams extends FormRequest
             'user_id' => ['nullable','integer',Rule::exists(User::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
-            'status' => ['nullable','in:todo,inprogress,done'],
+            'status.*' => ['nullable','in:todo,inprogress,done'],
             'priority' => ['nullable','in:low,medium,high'],
             'name' => ['nullable','string','max:255']
         ];

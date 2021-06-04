@@ -46,6 +46,9 @@ class TaskService {
                             $query->wherePivot('project_label_id',$val);
                         });
                     break;
+                    case 'status':
+                        $query_builder->whereIn('status',$val);
+                        break;
                     default:
                         $query_builder->where($field,$val);
                     break;
