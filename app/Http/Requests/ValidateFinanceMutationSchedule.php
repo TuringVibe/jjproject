@@ -54,6 +54,7 @@ class ValidateFinanceMutationSchedule extends FormRequest
             'project_id' => ['nullable','integer',Rule::exists(Project::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
+            'attached_label_ids' => ['nullable'],
             'attached_label_ids.*' => ['nullable','integer',Rule::exists(FinanceLabel::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
