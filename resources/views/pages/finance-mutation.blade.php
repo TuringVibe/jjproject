@@ -133,7 +133,6 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
     <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
     <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
     <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
