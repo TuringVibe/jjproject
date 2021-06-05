@@ -44,7 +44,7 @@ class SubtaskService {
             });
             return $subtask;
         } catch(\Exception $e) {
-            throw new Exception("Failed to save data", 500);
+            throw new Exception(__('response.save_failed'), 500);
         }
     }
 
@@ -79,7 +79,7 @@ class SubtaskService {
             });
             return $result;
         } catch(\Exception $e) {
-            throw new Exception("Failed to delete data", 500);
+            throw new Exception(__('response.delete_failed'), 500);
         }
     }
 

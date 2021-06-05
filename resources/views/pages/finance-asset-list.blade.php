@@ -64,6 +64,18 @@
                             <th>total</th>
                         </tr>
                     </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="text-center align-middle">Grand total</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -174,7 +186,12 @@
         },
         columns: [
             {data: 'name'},
-            {data: 'qty'},
+            {
+                data: 'qty',
+                render: (data) => {
+                    return new Intl.NumberFormat().format(data);
+                }
+            },
             {data: 'unit'},
             {data: 'buy_datetime'},
             {
@@ -222,7 +239,28 @@
                         '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';
                 }
             }
-        ]
+        ],
+        footerCallback: function(row, data, start, end, display) {
+            if(data.length > 0) {
+                var total_usd_unit = 0, total_usd_total = 0, total_cny_unit = 0,
+                    total_cny_total = 0, total_idr_unit = 0, total_idr_total = 0;
+                for(item of data) {
+                    total_usd_unit += item.usd_unit;
+                    total_usd_total += item.usd_total;
+                    total_cny_unit += item.cny_unit;
+                    total_cny_total += item.cny_total;
+                    total_idr_unit += item.idr_unit;
+                    total_idr_total += item.idr_total;
+                }
+
+                $(row).find('th:eq(1)').html("&#36; "+new Intl.NumberFormat().format(new Number(total_usd_unit).toFixed(2)));
+                $(row).find('th:eq(2)').html("&#36; "+new Intl.NumberFormat().format(new Number(total_usd_total).toFixed(2)));
+                $(row).find('th:eq(3)').html("&yen; "+new Intl.NumberFormat().format(new Number(total_cny_unit).toFixed(2)));
+                $(row).find('th:eq(4)').html("&yen; "+new Intl.NumberFormat().format(new Number(total_cny_total).toFixed(2)));
+                $(row).find('th:eq(5)').html("Rp "+new Intl.NumberFormat().format(new Number(total_idr_unit).toFixed(2)));
+                $(row).find('th:eq(6)').html("Rp "+new Intl.NumberFormat().format(new Number(total_idr_total).toFixed(2)));
+            }
+        }
     });
 
     $('#list').on('mutated', (e) => {

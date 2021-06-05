@@ -4,8 +4,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
         .user-img {
@@ -141,7 +139,6 @@
 
 @push('scripts')
     <script src="{{ asset('lib/DataTables/datatables.min.js') }}"></script>
-    <script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
     <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
     <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
     <script>
@@ -195,7 +192,6 @@
 @endpush
 
 @push('ready-scripts')
-    $('.select2').select2();
 
     $('#filter-button').on('click',(e) => {
         document.querySelector('#list').dispatchEvent(new CustomEvent('mutated'));

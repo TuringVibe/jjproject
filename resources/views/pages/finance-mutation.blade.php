@@ -3,8 +3,6 @@
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
@@ -236,7 +234,6 @@
 @endpush
 
 @push('ready-scripts')
-    $('.select2').select2();
     $('.date-picker').daterangepicker({
         autoUpdateInput: false,
         showDropdowns: true,

@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/regular.min.css')}}">
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/brands.min.css')}}">
     <link rel="stylesheet" href="{{asset('lib/fontawesome-5.15.3/css/solid.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{asset(session('theme')['obj']['css_path'])}}">
     <link rel="stylesheet" href="{{asset('css/general.css')}}">
     @stack('head')
@@ -29,10 +31,12 @@
     <script src="{{asset('lib/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js')}}"></script>
     <script src="{{asset('lib/sweetalert2-10.15.7/sweetalert2.all.min.js')}}"></script>
     <script src="{{asset('lib/jQuery-slimScroll-1.3.8/jquery.slimscroll.min.js')}}"></script>
+    <script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
     <script src="{{asset('js/general.js')}}"></script>
     @stack('scripts')
     <script>
         $(document).ready(function() {
+            $('.select2').select2();
             $('.custom-file-input').on('change', (e) => {
                 var fileName = e.target.files[0].name;
                 $(e.target).next('.custom-file-label').html(fileName);

@@ -73,7 +73,7 @@ class FinanceAssetService {
             });
             return $finance_asset;
         } catch(\Exception $e) {
-            throw new \Exception("Failed to save data: ".$e->getMessage(), 500);
+            throw new \Exception(__('response.save_failed'), 500);
         }
     }
 

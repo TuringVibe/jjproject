@@ -148,6 +148,8 @@ class FinanceMutationService {
         try{
             $finance_mutation = null;
             DB::transaction(function () use(&$finance_mutation, $attr){
+                $user_id = 0;
+                if(Auth::check()) $user_id = Auth::user()->id;
                 if(isset($attr['id'])) {
                     $finance_mutation = FinanceMutation::find($attr['id']);
                     if(isset($attr['finance_label_ids'])) {
@@ -157,7 +159,7 @@ class FinanceMutationService {
                             $finance_mutation->labels()->sync($attr['finance_label_ids']);
                     }
                     if(array_key_exists('finance_label_ids',$attr)) unset($attr['finance_label_ids']);
-                    $attr['updated_by'] = Auth::user()->id;
+                    if(!isset($attr['updated_by'])) $attr['updated_by'] = $user_id;
                     $finance_mutation->fill($attr);
                     $finance_mutation->save();
                 } else {
@@ -168,8 +170,8 @@ class FinanceMutationService {
                         unset($attr['finance_label_ids']);
                     }
                     if(array_key_exists('finance_label_ids',$attr)) unset($attr['finance_label_ids']);
-                    $attr['created_by'] = Auth::user()->id;
-                    $attr['updated_by'] = $attr['created_by'];
+                    if(!isset($attr['created_by'])) $attr['created_by'] = $user_id;
+                    if(!isset($attr['updated_by'])) $attr['updated_by'] = $user_id;
                     $finance_mutation = FinanceMutation::create($attr);
                     if(!empty($finance_label_ids))
                         $finance_mutation->labels()->sync($finance_label_ids);
@@ -177,7 +179,7 @@ class FinanceMutationService {
             });
             return $finance_mutation;
         } catch(\Exception $e) {
-            throw new \Exception("Failed to save data: ".$e->getMessage(), 500);
+            throw new \Exception(__('response.save_failed'), 500);
         }
     }
 
@@ -194,7 +196,7 @@ class FinanceMutationService {
             });
             return true;
         }catch(\Exception $e) {
-            throw new \Exception("Failed to delete data", 500);
+            throw new \Exception(__('response.delete_failed'), 500);
         }
     }
 

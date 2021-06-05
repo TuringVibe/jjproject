@@ -32,9 +32,9 @@ class FinanceAsset extends Model
         'deleted_by'
     ];
     protected $casts = [
-        'qty' => 'decimal:3',
+        'qty' => 'decimal:15',
         'buy_datetime' => 'datetime:Y-m-d H:i:s',
-        'buy_price_per_unit' => 'decimal:3',
+        'buy_price_per_unit' => 'decimal:15',
         'usd_cny' => 'decimal:15',
         'usd_idr' => 'decimal:15',
         'cny_usd' => 'decimal:15',

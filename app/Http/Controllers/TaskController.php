@@ -115,7 +115,7 @@ class TaskController extends Controller
         ]);
         return response()->json([
             'status' => false,
-            'message' => 'Failed to save data'
+            'message' => __('response.save_failed')
         ]);
     }
 

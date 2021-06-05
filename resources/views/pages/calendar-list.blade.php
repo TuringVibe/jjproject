@@ -43,7 +43,7 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
         extraParams: {
             'tz': timezone
         },
-        failure: 'Failed to retrieve data'
+        failure: @json(__('response.retrieve_failed'))
     },
     eventClick: function(info) {
         $('#popup-event').data('action','show');

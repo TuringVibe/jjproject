@@ -35,7 +35,7 @@ class FinanceMutationScheduleService {
     }
 
     public function runTodaySchedule() {
-        $now = Carbon::now();
+        $now = Carbon::now()->addDay();
         $finance_mutation_schedules = FinanceMutationSchedule::whereNull('deleted_at')
             ->where('next_mutation_date',$now->toDateString());
         if(!$finance_mutation_schedules->exists()) return;
@@ -74,7 +74,7 @@ class FinanceMutationScheduleService {
                 }
             });
         } catch(\Exception $e) {
-            throw new \Exception('Failed to save data');
+            throw new \Exception(__('response.save_failed'));
         }
     }
 
@@ -95,7 +95,7 @@ class FinanceMutationScheduleService {
             });
             return $finance_mutation_schedule;
         } catch(\Exception $e) {
-            throw new \Exception("Failed to save data: ".$e->getMessage(), 500);
+            throw new \Exception(__('response.save_failed'), 500);
         }
     }
 

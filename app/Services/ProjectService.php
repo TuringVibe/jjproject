@@ -114,7 +114,7 @@ class ProjectService {
             });
             return $project;
         } catch(\Exception $e) {
-            throw new Exception("Failed to save data", 500);
+            throw new Exception(__('response.save_failed'), 500);
         }
     }
 

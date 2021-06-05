@@ -183,7 +183,7 @@ class TaskService {
             });
             return $task;
         } catch(\Exception $e) {
-            throw new Exception("Failed to save data: ".$e->getMessage(), 500);
+            throw new Exception(__('response.save_failed'), 500);
         }
     }
 
@@ -198,7 +198,7 @@ class TaskService {
             });
             return true;
         }catch(\Exception $e) {
-            throw new Exception("Failed to delete data", 500);
+            throw new Exception(__('response.delete_failed'), 500);
         }
     }
 

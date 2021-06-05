@@ -32,7 +32,7 @@ class AssetPriceChange extends Model
     protected $casts = [
         'finance_asset_id' => 'integer',
         'change_datetime' => 'datetime',
-        'price_per_unit' => 'decimal:3',
+        'price_per_unit' => 'decimal:15',
         'usd_cny' => 'decimal:15',
         'usd_idr' => 'decimal:15',
         'cny_usd' => 'decimal:15',

@@ -27,13 +27,13 @@ class SubtaskController extends Controller
         if($result) {
             return [
                 'status' => true,
-                'message' => 'Data retrieved successfully',
+                'message' => __('response.retrieve_succeed'),
                 'data' => $result
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to retrieve data',
+            'message' => __('response.retrieve_failed'),
             'errors' => []
         ];
     }
@@ -44,12 +44,12 @@ class SubtaskController extends Controller
         $result = $this->subtask_service->save($request->task_id, $attr);
         if(isset($result)) return [
             'status' => true,
-            'message' => 'Data saved successfully',
+            'message' => __('response.save_succeed'),
             'data' => $result
         ];
         return [
             'status' => false,
-            'message' => 'Failed to save data',
+            'message' => __('response.save_failed'),
             'errors' => []
         ];
     }
@@ -60,12 +60,12 @@ class SubtaskController extends Controller
         $result = $this->subtask_service->bulkInsert($request->task_id, $attr);
         if(isset($result)) return [
             'status' => true,
-            'message' => 'Data saved successfully',
+            'message' => __('response.save_succeed'),
             'data' => $result
         ];
         return [
             'status' => false,
-            'message' => 'Failed to save data',
+            'message' => __('response.save_failed'),
             'errors' => []
         ];
     }
@@ -75,12 +75,12 @@ class SubtaskController extends Controller
         if($result) {
             return [
                 'status' => true,
-                'message' => 'Data deleted successfully',
+                'message' => __('response.delete_succeed')
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to delete data'
+            'message' => __('response.delete_failed')
         ];
     }
 }

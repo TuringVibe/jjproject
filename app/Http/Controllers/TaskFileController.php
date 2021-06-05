@@ -39,13 +39,13 @@ class TaskFileController extends Controller
             $result->can_delete = $request->user()->can('deleteFile',[$task, $result->id]);
             return [
                 'status' => true,
-                'message' => 'Data saved successfully',
+                'message' => __('response.save_succeed'),
                 'data' => $result
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to save data',
+            'message' => __('response.save_failed'),
             'errors' => []
         ];
     }
@@ -60,12 +60,12 @@ class TaskFileController extends Controller
         if($result) {
             return [
                 'status' => true,
-                'message' => 'Data deleted successfully',
+                'message' => __('response.delete_succeed'),
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to delete data'
+            'message' => __('response.delete_failed')
         ];
     }
 }

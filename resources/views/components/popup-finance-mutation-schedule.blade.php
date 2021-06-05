@@ -1,6 +1,4 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
 @endpush
 <div id="popup-finance-mutation-schedule" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-finance-mutation-schedule-title" aria-hidden="true">
@@ -64,7 +62,6 @@
                     <div class="form-group">
                         <label for="attached-label-ids">Label</label>
                         <select id="attached-label-ids" class="select2 form-control" name="attached_label_ids[]" aria-describedby="validate-attached_label_ids" multiple="multiple">
-                            <option value="">-- Not Selected --</option>
                             @foreach ($labels as $label)
                                 <option value="{{$label['id']}}">{{$label['name']}}</option>
                             @endforeach
@@ -72,8 +69,8 @@
                         <div id="validate-attached_label_ids" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
-                        <label for="project-id">Link To Project</label>
-                        <select id="project-id" name="project_id" class="select2 form-control" aria-describedby="validate-project_id">
+                        <label for="scheduled-project-id">Link To Project</label>
+                        <select id="scheduled-project-id" name="project_id" class="select2 form-control" aria-describedby="validate-project_id">
                             <option value="">-- No Project --</option>
                             @foreach ($projects as $project)
                                 <option value="{{$project['id']}}">{{$project['name']}}</option>
@@ -103,7 +100,6 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
@@ -118,7 +114,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
         $modal.find('#nominal').val(null);
         $modal.find('#currency').val(null);
         $modal.find('#attached-label-ids').val([]).trigger('change');
-        $modal.find('#project-id').val(null).trigger('change');
+        $modal.find('#scheduled-project-id').val(null).trigger('change');
         $modal.find('#notes').val(null);
         $modal.find('.is-invalid').removeClass('is-invalid');
     }
@@ -141,7 +137,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
                 $modal.find('#nominal').val(res.nominal);
-                $modal.find('#project-id').val(res.project_id).trigger('change');
+                $modal.find('#scheduled-project-id').val(res.project_id).trigger('change');
                 $modal.find('#notes').val(res.notes);
                 var label_ids = [];
                 for(label of res.attached_label_ids) {

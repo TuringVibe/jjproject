@@ -1,6 +1,4 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
 @endpush
 <div id="popup-finance-mutation" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-finance-mutation-title" aria-hidden="true">
@@ -54,7 +52,6 @@
                     <div class="form-group">
                         <label for="finance-label-ids">Label</label>
                         <select id="finance-label-ids" class="select2 form-control" name="finance_label_ids[]" aria-describedby="validate-finance_label_ids" multiple="multiple">
-                            <option value="">-- Not Selected --</option>
                             @foreach ($labels as $label)
                                 <option value="{{$label['id']}}">{{$label['name']}}</option>
                             @endforeach
@@ -93,7 +90,6 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>

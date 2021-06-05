@@ -1,6 +1,4 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
 @endpush
 <div id="popup-task" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-task-title" aria-hidden="true">
@@ -66,7 +64,6 @@
                     <div class="form-group">
                         <label for="user-ids">Users</label>
                         <select id="user-ids" name="user_ids[]" class="select2" multiple="multiple" aria-describedby="validate-user_ids">
-                            <option value="">-- No User --</option>
                             @foreach ($users as $user)
                                 <option value="{{$user['id']}}">{{$user['firstname'].' '.$user['lastname']}}</option>
                             @endforeach
@@ -87,7 +84,6 @@
 $('#popup-task').on('hide.bs.modal', popUpTaskHide);
 $('#popup-task').on('show.bs.modal', popUpTaskShow);
 $('#popup-task').on('shown.bs.modal', popUpTaskShown);
-$('.select2').select2();
 $('.date-picker').daterangepicker({
     autoUpdateInput: false,
     singleDatePicker: true,
@@ -109,7 +105,6 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>

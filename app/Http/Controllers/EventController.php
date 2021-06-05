@@ -43,13 +43,13 @@ class EventController extends Controller {
         if($result) {
             return [
                 'status' => true,
-                'message' => 'Data saved successfully',
+                'message' => __('response.save_succeed'),
                 'data' => $result
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to save data'
+            'message' => __('response.save_failed')
         ];
     }
 
@@ -58,12 +58,12 @@ class EventController extends Controller {
         if($result) {
             return [
                 'status' => true,
-                'message' => 'Data deleted successfully'
+                'message' => __('response.save_succeed')
             ];
         }
         return [
             'status' => false,
-            'message' => 'Failed to delete data'
+            'message' => __('response.delete_failed')
         ];
     }
 }

@@ -1,7 +1,5 @@
 @push('head')
     <link rel="stylesheet" href="{{ asset('lib/bootstrap-colorpicker-3.2.0/css/bootstrap-colorpicker.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-4.0.13/css/select2.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
 @endpush
 <div id="popup-project" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-project-title" aria-hidden="true">
@@ -63,7 +61,6 @@
                     <div class="form-group">
                         <label for="user-ids">Users</label>
                         <select id="user-ids" name="user_ids[]" class="select2" multiple="multiple" aria-describedby="validate-user_ids">
-                            <option value="">-- No User --</option>
                             @foreach ($users as $user)
                                 <option value="{{$user['id']}}">{{$user['firstname'].' '.$user['lastname']}}</option>
                             @endforeach
@@ -73,7 +70,6 @@
                     <div class="form-group">
                         <label for="project-label-ids">Labels</label>
                         <select id="project-label-ids" name="project_label_ids[]" class="select2" multiple="multiple" aria-describedby="validate-project_label_ids">
-                            <option value="">-- No Label --</option>
                             @foreach ($labels as $label)
                                 <option value="{{$label['id']}}">{{$label['name']}}</option>
                             @endforeach
@@ -94,7 +90,6 @@
 $('#popup-project').on('hide.bs.modal', popUpProjectHide);
 $('#popup-project').on('show.bs.modal', popUpProjectShow);
 $('#popup-project').on('shown.bs.modal', popUpProjectShown);
-$('.select2').select2();
 $('.date-picker').daterangepicker({
     singleDatePicker: true,
     showDropdowns: true,
@@ -104,7 +99,6 @@ $('.date-picker').daterangepicker({
 
 @push('scripts')
 <script src="{{ asset('lib/bootstrap-colorpicker-3.2.0/js/bootstrap-colorpicker.min.js') }}"></script>
-<script src="{{ asset('lib/select2-4.0.13/js/select2.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
