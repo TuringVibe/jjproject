@@ -35,7 +35,7 @@ class FinanceMutationScheduleService {
     }
 
     public function runTodaySchedule() {
-        $now = Carbon::now()->addDay();
+        $now = Carbon::now();
         $finance_mutation_schedules = FinanceMutationSchedule::whereNull('deleted_at')
             ->where('next_mutation_date',$now->toDateString());
         if(!$finance_mutation_schedules->exists()) return;
