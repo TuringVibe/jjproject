@@ -8,6 +8,7 @@ use App\Http\Requests\ValidateFinanceMutationParams;
 use App\Services\FinanceLabelService;
 use App\Services\FinanceMutationService;
 use App\Services\ProjectService;
+use App\Services\WalletService;
 
 class FinanceMutationController extends Controller
 {
@@ -28,6 +29,7 @@ class FinanceMutationController extends Controller
         ];
         $this->config['labels'] = (new FinanceLabelService())->get();
         $this->config['projects'] = (new ProjectService())->get();
+        $this->config["wallets"] = (new WalletService())->get();
         return view('pages.finance-mutation', $this->config);
     }
 

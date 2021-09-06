@@ -41,6 +41,7 @@
                             <select id="mode" class="form-control" name="mode" aria-describedby="validate-mode">
                                 <option value="debit">Debit</option>
                                 <option value="credit">Credit</option>
+                                <option value="transfer">Transfer</option>
                             </select>
                             <div id="validate-mode" class="invalid-feedback"></div>
                         </div>
@@ -58,6 +59,23 @@
                             <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
                             <div id="validate-nominal" class="invalid-feedback"></div>
                         </div>
+                    </div>
+                    <div id="source-of-fund" class="form-group">
+                        <label for="from-wallet">Source of Fund</label>
+                        <select id="from-wallet" class="form-control select2" name="from_wallet_id" aria-describedby="validate-from_wallet_id">
+                            <option value="">-- No wallet --</option>
+                            @foreach ($wallets as $wallet)
+                            <option value="{{$wallet['id']}}">{{$wallet['name']}} [&#36; {{number_format($wallet['total_usd'],1)}}] [&yen; {{number_format($wallet['total_cny'],1)}}] [Rp {{number_format($wallet['total_idr'],1)}}]</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="transfer-to" class="d-none form-group">
+                        <label for="to-wallet">Transfer to</label>
+                        <select id="to-wallet" class="form-control select2" name="to_wallet_id" aria-describedby="validate-to_wallet_id">
+                            @foreach ($wallets as $wallet)
+                            <option value="{{$wallet['id']}}">{{$wallet['name']}} [&#36; {{number_format($wallet['total_usd'],1)}}] [&yen; {{number_format($wallet['total_cny'],1)}}] [Rp {{number_format($wallet['total_idr'],1)}}]</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="attached-label-ids">Label</label>
@@ -103,6 +121,18 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
+    function modeChanged($modal, mode) {
+        var sourceOfFundElem = $modal.find("#source-of-fund");
+        var transferTo = $modal.find("#transfer-to");
+        if(mode == "transfer") {
+            transferTo.removeClass("d-none");
+            transferTo.find('#to-wallet').prop("disabled",false);
+        } else {
+            transferTo.addClass("d-none");
+            transferTo.find('#to-wallet').prop("disabled",true);
+        }
+    }
+
     function popUpFinanceMutationScheduleHide(e) {
         var $modal = $(this);
         $modal.find('#popup-finance-mutation-schedule-form').off('submit');
@@ -110,8 +140,11 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
         $modal.find('#next-mutation-date').val(null);
         $modal.find('#repeat').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#mode').val(null);
+        $modal.find('#mode option[value="debit"]').prop("selected",true);
+        $modal.find('#mode option[value="transfer"]').show();
+        modeChanged($modal, $modal.find('#mode').val());
         $modal.find('#nominal').val(null);
+        $modal.find('#currency option[value="usd"]').prop("selected",true);
         $modal.find('#currency').val(null);
         $modal.find('#attached-label-ids').val([]).trigger('change');
         $modal.find('#scheduled-project-id').val(null).trigger('change');
@@ -137,6 +170,8 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
                 $modal.find('#nominal').val(res.nominal);
+                $modal.find('#from-wallet').val(res.from_wallet_id).trigger('change');
+                if($res.mode == "transfer") $modal.find('#to-wallet').val(res.to_wallet_id).trigger('change');
                 $modal.find('#scheduled-project-id').val(res.project_id).trigger('change');
                 $modal.find('#notes').val(res.notes);
                 var label_ids = [];
@@ -144,12 +179,14 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
                     label_ids.push(label);
                 }
                 $modal.find('#attached-label-ids').val(label_ids).trigger('change');
+                modeChanged($modal, res.mode);
             });
         }
     }
 
     function popUpFinanceMutationScheduleShown(e) {
         var $modal = $(this);
+        $modal.find('#mode').on("change", (e) => { modeChanged($modal, $(e.target).val()); });
         $modal.find('#popup-finance-mutation-schedule-form').on('submit', (e) => {
             var formData = new FormData(e.target);
             $.ajax({

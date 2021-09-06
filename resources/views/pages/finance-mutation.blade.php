@@ -107,6 +107,7 @@
                                 <tr>
                                     <th rowspan="2">Date</th>
                                     <th rowspan="2">Name</th>
+                                    <th rowspan="2">Wallet</th>
                                     <th colspan="3">Debit</th>
                                     <th colspan="3">Kredit</th>
                                     <th rowspan="2">Label</th>
@@ -299,7 +300,13 @@
         columns: [
             {data: 'next_mutation_date'},
             {data: 'name'},
-            {data: 'mode'},
+            {
+                data: 'mode',
+                render: (data,type,row,meta) => {
+                    if(data != 'transfer') return data;
+                    return data + ', from ' + (row.from_wallet?.name ?? '-') + ' to ' + (row.to_wallet?.name ?? '-');
+                }
+            },
             {data: 'currency'},
             {
                 data: 'nominal',
@@ -315,7 +322,7 @@
             {data: 'repeat'},
             {
                 data: null,
-                width: "90px",
+                width: "3.75rem",
                 render: (data, type, row, meta) => {
                     return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-finance-mutation-schedule" data-action="edit"'+
                         'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+
@@ -355,6 +362,12 @@
         columns: [
             {data: 'mutation_date'},
             {data: 'name'},
+            {
+                data: null,
+                render: (data,type,row,meta) => {
+                    return row.wallet?.name ?? '-';
+                }
+            },
             {
                 data: 'usd',
                 render: (data,type,row,meta) => {
@@ -417,7 +430,7 @@
             },
             {
                 data: null,
-                width: "90px",
+                width: "3.75rem",
                 render: (data, type, row, meta) => {
                     return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-finance-mutation" data-action="edit"'+
                         'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+

@@ -31,6 +31,7 @@
                             <select id="mode" class="form-control" name="mode" aria-describedby="validate-mode">
                                 <option value="debit">Debit</option>
                                 <option value="credit">Credit</option>
+                                <option value="transfer">Transfer</option>
                             </select>
                             <div id="validate-mode" class="invalid-feedback"></div>
                         </div>
@@ -48,6 +49,23 @@
                             <input type="text" name="nominal" id="nominal" class="form-control" aria-describedby="validate-nominal">
                             <div id="validate-nominal" class="invalid-feedback"></div>
                         </div>
+                    </div>
+                    <div id="source-of-fund" class="form-group">
+                        <label for="from-wallet">Source of Fund</label>
+                        <select id="from-wallet" class="form-control select2" name="from_wallet_id" aria-describedby="validate-from_wallet_id">
+                            <option value="">-- No wallet --</option>
+                            @foreach ($wallets as $wallet)
+                            <option value="{{$wallet['id']}}">{{$wallet['name']}} [&#36; {{number_format($wallet['total_usd'],1)}}] [&yen; {{number_format($wallet['total_cny'],1)}}] [Rp {{number_format($wallet['total_idr'],1)}}]</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div id="transfer-to" class="d-none form-group">
+                        <label for="to-wallet">Transfer to</label>
+                        <select id="to-wallet" class="form-control select2" name="to_wallet_id" aria-describedby="validate-to_wallet_id">
+                            @foreach ($wallets as $wallet)
+                            <option value="{{$wallet['id']}}">{{$wallet['name']}} [&#36; {{number_format($wallet['total_usd'],1)}}] [&yen; {{number_format($wallet['total_cny'],1)}}] [Rp {{number_format($wallet['total_idr'],1)}}]</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="finance-label-ids">Label</label>
@@ -93,15 +111,19 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
 <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
 <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
+
     function popUpFinanceMutationHide(e) {
         var $modal = $(this);
         $modal.find('#popup-finance-mutation-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#mutation-date').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#mode').val(null);
-        $modal.find('#currency').val(null);
+        $modal.find('#mode option[value="debit"]').prop("selected",true);
+        $modal.find('#mode option[value="transfer"]').show();
+        modeChanged($modal, $modal.find('#mode').val());
         $modal.find('#nominal').val(null);
+        $modal.find('#currency option[value="usd"]').prop("selected",true);
+        $modal.find('#currency').off('change');
         $modal.find('#finance-label-ids').val([]).trigger('change');
         $modal.find('#project-id').val(null).trigger('change');
         $modal.find('#notes').val(null);
@@ -114,10 +136,12 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
         $modal.find('small.form-text.text-muted').hide();
         $modal.find('#create-finance-mutation-title').text('Create Finance Mutation');
         $modal.find('#mutation-date').val(moment().format('YYYY-MM-DD'));
+
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
             $modal.find('small.form-text.text-muted').show();
             $modal.find('#create-finance-mutation-title').text('Update Finance Mutation');
+            $modal.find('#mode option[value="transfer"]').hide();
             $.get('{{route("finance-mutations.edit")}}',{id: id}).done((res) => {
                 $modal.find('#id').val(res.id);
                 $modal.find('#mutation-date').val(res.mutation_date);
@@ -125,6 +149,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
                 $modal.find('#mode').val(res.mode);
                 $modal.find('#currency').val(res.currency);
                 $modal.find('#nominal').val(res.nominal);
+                $modal.find('#from-wallet').val(res.wallet_id).trigger('change');
                 $modal.find('#project-id').val(res.project_id).trigger('change');
                 $modal.find('#notes').val(res.notes);
                 var label_ids = [];
@@ -132,6 +157,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
                     label_ids.push(label['id']);
                 }
                 $modal.find('#finance-label-ids').val(label_ids).trigger('change');
+                modeChanged($modal, res.mode);
             });
         }
     }
@@ -143,8 +169,21 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
         return html;
     }
 
+    function modeChanged($modal, mode) {
+        var sourceOfFundElem = $modal.find("#source-of-fund");
+        var transferTo = $modal.find("#transfer-to");
+        if(mode == "transfer") {
+            transferTo.removeClass("d-none");
+            transferTo.find('#to-wallet').prop("disabled",false);
+        } else {
+            transferTo.addClass("d-none");
+            transferTo.find('#to-wallet').prop("disabled",true);
+        }
+    }
+
     function popUpFinanceMutationShown(e) {
         var $modal = $(this);
+        $modal.find('#mode').on("change", (e) => { modeChanged($modal, $(e.target).val()); });
         $modal.find('#popup-finance-mutation-form').on('submit', (e) => {
             $loading = $(loading());
             $modal.find('.modal-footer').prepend($loading);

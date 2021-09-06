@@ -88,7 +88,7 @@ class FinanceMutationService {
     }
 
     public function get($params = []) {
-        $query_builder = FinanceMutation::with(['labels','project'])->whereNull('deleted_at');
+        $query_builder = FinanceMutation::with(['labels','project','wallet'])->whereNull('deleted_at');
         foreach($params as $field => $val) {
             if(isset($val)) {
                 switch($field) {
@@ -117,7 +117,7 @@ class FinanceMutationService {
                 }
             }
         }
-        $query_builder = $query_builder->orderBy('mutation_date','desc');
+        $query_builder = $query_builder->orderBy('mutation_date','desc')->orderBy('created_at','desc');
         $finance_mutations = collect();
         foreach($query_builder->cursor() as $mutation) {
             $convert_to_usd = $mutation->{$mutation->currency."_usd"} ?? 1;
@@ -127,6 +127,7 @@ class FinanceMutationService {
                 'id' => $mutation->id,
                 'mutation_date' => Carbon::parse($mutation->mutation_date)->format('Y-m-d'),
                 'name' => $mutation->name,
+                'wallet' => $mutation->wallet,
                 'usd' => $mutation->nominal * $convert_to_usd,
                 'cny' => $mutation->nominal * $convert_to_cny,
                 'idr' => $mutation->nominal * $convert_to_idr,
@@ -146,12 +147,16 @@ class FinanceMutationService {
 
     public function save($attr) {
         try{
-            $finance_mutation = null;
-            DB::transaction(function () use(&$finance_mutation, $attr){
+            $finance_mutations = null;
+            DB::transaction(function () use(&$finance_mutations, $attr){
                 $user_id = 0;
                 if(Auth::check()) $user_id = Auth::user()->id;
                 if(isset($attr['id'])) {
                     $finance_mutation = FinanceMutation::find($attr['id']);
+                    $attr['wallet_id'] = $attr["from_wallet_id"] ?? null;
+                    if(array_key_exists("from_wallet_id",$attr)) unset($attr["from_wallet_id"]);
+                    if(array_key_exists("to_wallet_id",$attr)) unset($attr["to_wallet_id"]);
+
                     if(isset($attr['finance_label_ids'])) {
                         if(empty($attr['finance_label_ids']))
                             $finance_mutation->labels()->detach();
@@ -162,22 +167,55 @@ class FinanceMutationService {
                     if(!isset($attr['updated_by'])) $attr['updated_by'] = $user_id;
                     $finance_mutation->fill($attr);
                     $finance_mutation->save();
+                    $finance_mutations[] = $finance_mutation;
                 } else {
+                    $attr["wallet_id"] = $attr["from_wallet_id"] ?? null;
+                    $to_wallet_id = null;
+                    if(array_key_exists("from_wallet_id", $attr)) unset($attr["from_wallet_id"]);
+                    if(array_key_exists("to_wallet_id", $attr)) {
+                        $to_wallet_id = $attr["to_wallet_id"];
+                        unset($attr["to_wallet_id"]);
+                    }
+
                     $this->currencyConversion($attr);
+
                     $finance_label_ids = null;
                     if(!empty($attr['finance_label_ids'])) {
                         $finance_label_ids = $attr['finance_label_ids'];
                         unset($attr['finance_label_ids']);
                     }
                     if(array_key_exists('finance_label_ids',$attr)) unset($attr['finance_label_ids']);
+
                     if(!isset($attr['created_by'])) $attr['created_by'] = $user_id;
                     if(!isset($attr['updated_by'])) $attr['updated_by'] = $user_id;
-                    $finance_mutation = FinanceMutation::create($attr);
-                    if(!empty($finance_label_ids))
-                        $finance_mutation->labels()->sync($finance_label_ids);
+
+                    if($attr["mode"] == "transfer") {
+                        $source_wallet_attr = $attr;
+                        $source_wallet_attr["mode"] = "credit";
+
+                        $finance_mutation_source = FinanceMutation::create($source_wallet_attr);
+
+                        $destination_wallet_attr = $attr;
+                        $destination_wallet_attr["wallet_id"] = $to_wallet_id;
+                        $destination_wallet_attr["mode"] = "debit";
+
+                        $finance_mutation_destination = FinanceMutation::create($destination_wallet_attr);
+                        if(!empty($finance_label_ids)) {
+                            $finance_mutation_source->labels()->sync($finance_label_ids);
+                            $finance_mutation_destination->labels()->sync($finance_label_ids);
+                        }
+                        $finance_mutations[] = $finance_mutation_source;
+                        $finance_mutations[] = $finance_mutation_destination;
+                    } else {
+                        $finance_mutation = FinanceMutation::create($attr);
+                        if(!empty($finance_label_ids)) {
+                            $finance_mutation->labels()->sync($finance_label_ids);
+                        }
+                        $finance_mutations[] = $finance_mutation;
+                    }
                 }
             });
-            return $finance_mutation;
+            return $finance_mutations;
         } catch(\Exception $e) {
             throw new \Exception(__('response.save_failed'), 500);
         }

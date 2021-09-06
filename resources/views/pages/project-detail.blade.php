@@ -466,7 +466,7 @@
             },
             {
                 data: null,
-                width: "90px",
+                width: "3.75rem",
                 render: (data, type, row, meta) => {
                     var htmlDownload = '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="downloadData(this)"><i class="fas fa-download"></i></button>';
                     var htmlDelete = '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteFile(this)"><i class="fas fa-trash"></i></button>';
@@ -508,7 +508,7 @@
             {
                 visible: @json(request()->user()->role == "admin"),
                 data: null,
-                width: "90px",
+                width: "3.75rem",
                 render: (data, type, row, meta) => {
                     return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-milestone" data-action="edit"'+
                         'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+

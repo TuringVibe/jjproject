@@ -231,12 +231,14 @@
             {
                 visible: @json(auth()->user()->role == "admin"),
                 data: null,
+                width: '4.75rem',
                 render: (data, type, row, meta) => {
+                    htmlDetail = '<button class="table-action-icon" type="button" onclick="window.location.href = \'/projects/detail?id='+row.id+'\'"><i class="fas fa-eye"></i></button>';
                     htmlUpdate = '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-project" data-action="edit" data-id="'+row.id+'"><i class="fas fa-pen"></i></button>';
                     htmlDelete = '<button class="table-action-icon" type="button" data-id="'+row.id+'" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';
                     if(!row.can_update) htmlUpdate = '';
                     if(!row.can_delete) htmlDelete = '';
-                    return htmlUpdate+htmlDelete;
+                    return htmlDetail+htmlUpdate+htmlDelete;
                 }
             }
         ]
@@ -249,7 +251,7 @@
     $("#list tbody").on('click','tr',function(e) {
         if($(e.target).is("tr,td")) {
             var data = table.row(this).data();
-            window.location.href = '/projects/detail?id='+data.id;
+            window.location.href = '/projects/board?id='+data.id;
         }
     });
 @endpush

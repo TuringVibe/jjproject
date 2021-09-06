@@ -232,7 +232,7 @@
             },
             {
                 data: null,
-                width: "90px",
+                width: "3.75rem",
                 render: (data, type, row, meta) => {
                     return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-finance-asset" data-action="edit"'+
                         'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+

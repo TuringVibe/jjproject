@@ -220,7 +220,7 @@
                 },
                 {
                     data: null,
-                    width: "30px",
+                    width: "3.75rem",
                     render: (data, type, row, meta) => {
                         return '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deletePriceChange(this)"><i class="fas fa-trash"></i></button>';
                     }

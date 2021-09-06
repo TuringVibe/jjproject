@@ -16,6 +16,8 @@ class FinanceMutationSchedule extends Model
         'currency',
         'nominal',
         'mode',
+        'from_wallet_id',
+        'to_wallet_id',
         'project_id',
         'attached_label_ids',
         'repeat',
@@ -26,6 +28,8 @@ class FinanceMutationSchedule extends Model
         'deleted_by'
     ];
     protected $casts = [
+        'from_wallet_id' => 'integer',
+        'to_wallet_id' => 'integer',
         'next_mutation_date' => 'datetime:Y-m-d',
         'nominal' => 'float',
         'project_id' => 'integer',
@@ -34,6 +38,14 @@ class FinanceMutationSchedule extends Model
         'updated_by' => 'integer',
         'deleted_by' => 'integer'
     ];
+
+    public function fromWallet() {
+        return $this->belongsTo(Wallet::class, "from_wallet_id");
+    }
+
+    public function toWallet() {
+        return $this->belongsTo(Wallet::class, "to_wallet_id");
+    }
 
     public function project() {
         return $this->belongsTo(Project::class);

@@ -18,7 +18,7 @@ class FinanceMutationScheduleController extends Controller
 
     public function data(ValidateFinanceMutationScheduleParams $request) {
         $result = $this->finance_mutation_schedule_service->get($request->validated());
-        echo json_encode($result->toArray());
+        return response()->json($result);
     }
 
     public function edit(ValidateFinanceMutationScheduleId $request) {

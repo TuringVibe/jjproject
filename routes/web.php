@@ -19,6 +19,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskFileController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -144,6 +145,14 @@ Route::middleware(['auth'])->group(function() {
             Route::get('/data-by-label', [FinanceDashboardController::class, "dataByLabel"])->name('data-by-label');
             Route::get('/periodic-statistic', [FinanceDashboardController::class, "periodicStatistic"])->name('periodic-statistic');
             Route::get('/asset-periodic-statistic', [FinanceDashboardController::class, "assetPeriodicStatistic"])->name('asset-periodic-statistic');
+        });
+
+        Route::prefix('wallets')->name('wallets.')->group(function() {
+            Route::get('/list',[WalletController::class, "list"])->name('list');
+            Route::get('/data',[WalletController::class, "data"])->name('data');
+            Route::get('/detail',[WalletController::class, "detail"])->name('detail');
+            Route::post('/save',[WalletController::class, "save"])->name('save');
+            Route::post('/delete',[WalletController::class, "delete"])->name('delete');
         });
 
         Route::prefix('finance-mutations')->name('finance-mutations.')->group(function() {

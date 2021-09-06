@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Models\FinanceLabel;
 use App\Models\FinanceMutationSchedule;
 use App\Models\Project;
+use App\Models\Wallet;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,6 +29,8 @@ class ValidateFinanceMutationSchedule extends FormRequest
             'currency' => trim(strip_tags($this->currency)),
             'nominal' => trim(strip_tags($this->nominal)),
             'mode' => trim(strip_tags($this->mode)),
+            'from_wallet_id' => $this->from_wallet_id == null ? null : trim(strip_tags($this->from_wallet_id)),
+            'to_wallet_id' => $this->to_wallet_id == null ? null : trim(strip_tags($this->to_wallet_id)),
             'project_id' => $this->project_id == null ? null : trim(strip_tags($this->project_id)),
             'attached_label_ids' => $this->attached_label_ids == null ? null : array_map(function($val){return trim(strip_tags($val));},$this->attached_label_ids),
             'repeat' => trim(strip_tags($this->repeat)),
@@ -50,7 +53,13 @@ class ValidateFinanceMutationSchedule extends FormRequest
             'name' => ['required','string','max:100'],
             'currency' => ['required','in:usd,cny,idr'],
             'nominal' => ['required','integer'],
-            'mode' => ['required','in:debit,credit'],
+            'mode' => ['required','in:debit,credit,transfer'],
+            'from_wallet_id' => ["bail","required_if:mode,transfer","nullable","integer",Rule::exists(Wallet::class,'id')->where(function($query){
+                $query->whereNull('deleted_at');
+            })],
+            'to_wallet_id' => ["bail","required_if:mode,transfer","nullable","integer",Rule::exists(Wallet::class,'id')->where(function($query){
+                $query->whereNull('deleted_at');
+            }),"different:from_wallet_id"],
             'project_id' => ['nullable','integer',Rule::exists(Project::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],

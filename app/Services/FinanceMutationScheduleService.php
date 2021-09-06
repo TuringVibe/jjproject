@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class FinanceMutationScheduleService {
 
     public function get($params = []) {
-        $query_builder = FinanceMutationSchedule::whereNull('deleted_at');
+        $query_builder = FinanceMutationSchedule::with(["fromWallet","toWallet"])->whereNull('deleted_at');
         foreach($params as $field => $val) {
             if(isset($val)) {
                 switch($field) {
@@ -48,6 +48,8 @@ class FinanceMutationScheduleService {
                         'currency' => $finance_mutation_schedule->currency,
                         'nominal' => $finance_mutation_schedule->nominal,
                         'mode' => $finance_mutation_schedule->mode,
+                        'from_wallet_id' => $finance_mutation_schedule->from_wallet_id,
+                        'to_wallet_id' => $finance_mutation_schedule->to_wallet_id,
                         'project_id' => $finance_mutation_schedule->project_id,
                         'notes' => $finance_mutation_schedule->notes,
                         'finance_label_ids' => $finance_mutation_schedule->attached_label_ids,
@@ -74,7 +76,7 @@ class FinanceMutationScheduleService {
                 }
             });
         } catch(\Exception $e) {
-            throw new \Exception(__('response.save_failed'));
+            throw new \Exception(__('response.save_failed'), 500);
         }
     }
 

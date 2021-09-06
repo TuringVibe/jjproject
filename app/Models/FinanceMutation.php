@@ -23,6 +23,7 @@ class FinanceMutation extends Model
         'idr_cny',
         'conversion_datetime',
         'mode',
+        'wallet_id',
         'project_id',
         'notes',
         'created_by',
@@ -42,11 +43,16 @@ class FinanceMutation extends Model
         'idr_usd' => 'decimal:15',
         'idr_cny' => 'decimal:15',
         'conversion_datetime' => 'datetime',
+        'wallet_id' => 'integer',
         'project_id' => 'integer',
         'created_by' => 'integer',
         'updated_by' => 'integer',
         'deleted_by' => 'integer'
     ];
+
+    public function wallet() {
+        return $this->belongsTo(Wallet::class);
+    }
 
     public function labels() {
         return $this->belongsToMany(FinanceLabel::class,'finance_attached_labels')->withTimestamps();

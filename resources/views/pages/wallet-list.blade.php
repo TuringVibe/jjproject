@@ -18,12 +18,12 @@
     <div class="content container-fluid">
         @include('components.content-header',[
                 'with_btn' => true,
-                'btn_label' => 'Create Finance Label',
+                'btn_label' => 'Create Wallet',
                 'action' => 'openModal()'
             ]
         )
         <div class="card">
-            <h4 class="card-header">Finance Label</h4>
+            <h4 class="card-header">Wallet</h4>
             <div class="card-body">
                 <div class="form-row">
                     <div class="col-auto form-group">
@@ -38,7 +38,10 @@
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Total Mutations</th>
+                            <th>Default Currency</th>
+                            <th>Total USD</th>
+                            <th>Total CNY</th>
+                            <th>Total IDR</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -46,7 +49,7 @@
             </div>
         </div>
     </div>
-    @include('components.popup-finance-label')
+    @include('components.popup-wallet')
 @endsection
 
 @push('scripts')
@@ -55,7 +58,7 @@
         function deleteData(elem) {
             Swal.fire({
                 title: 'Are you sure ?',
-                text: "You won't be able to revert this!",
+                text: "You won't be able to revert this! Its mutations will still be there",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -65,7 +68,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         method: 'POST',
-                        url: '{{route("finance-labels.delete")}}',
+                        url: '{{route("wallets.delete")}}',
                         data: { id: $(elem).data('id') },
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -97,7 +100,7 @@
         }
 
         function openModal() {
-            $('#popup-finance-label').modal('show');
+            $('#popup-wallet').modal('show');
         }
 
     </script>
@@ -116,25 +119,43 @@
         searching: false,
         processing: true,
         ajax: {
-            url: '{{ route('finance-labels.data') }}',
+            url: '{{ route('wallets.data') }}',
             dataSrc: '',
             data: function(d) {
                 d.name = $('#filter-name').val();
             }
         },
         columns: [
+            {data: 'name'},
             {
-                data: 'name',
-                render: (data, type, row, meta) => {
-                    return '<span class="label-list" style="background-color:'+row.color+'">'+data+'</span>';
+                data: 'default_currency',
+                render: (data) => {
+                    return '<span class="text-uppercase">'+data+'</span>';
                 }
             },
-            {data: 'mutations_count'},
+            {
+                data: 'total_usd',
+                render: (data, type, row, meta) => {
+                    return '&#36; ' + new Intl.NumberFormat().format(new Number(data).toFixed(1));
+                }
+            },
+            {
+                data: 'total_cny',
+                render: (data, type, row, meta) => {
+                    return '&yen; ' + new Intl.NumberFormat().format(new Number(data).toFixed(1));
+                }
+            },
+            {
+                data: 'total_idr',
+                render: (data, type, row, meta) => {
+                    return 'Rp ' + new Intl.NumberFormat().format(new Number(data).toFixed(1));
+                }
+            },
             {
                 data: null,
                 width: "3.75rem",
                 render: (data, type, row, meta) => {
-                    return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-finance-label" data-action="edit"'+
+                    return '<button class="table-action-icon" type="button" data-toggle="modal" data-target="#popup-wallet" data-action="edit" '+
                         'data-id="'+row.id+'"><i class="fas fa-pen"></i></button>'+
                         '<button class="table-action-icon" data-id="'+row.id+'" type="button" onclick="deleteData(this)"><i class="fas fa-trash"></i></button>';
                 }

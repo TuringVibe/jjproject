@@ -22,6 +22,7 @@
     <h5 class="sidebar-heading">FINANCE</h5>
     <ul class="nav flex-column">
         <li class="nav-item"><a class="nav-link {{$active == "finance-dashboard" ? "active" : ""}}" href="{{route('finance-dashboard.dashboard')}}"><i class="fas fa-chart-line"></i> <span class="menu-title">Dashboard</span></a></li>
+        <li class="nav-item"><a class="nav-link {{$active == "walllets.list" ? "active" : ""}}" href="{{route('wallets.list')}}"><i class="fas fa-wallet"></i> <span class="menu-title">Wallets</span></a></li>
         <li class="nav-item"><a class="nav-link {{$active == "finance-mutations.list" ? "active" : ""}}" href="{{route('finance-mutations.list')}}"><i class="fas fa-balance-scale"></i> <span class="menu-title">Mutations</span></a></li>
         <li class="nav-item"><a class="nav-link {{$active == "finance-asset.list" ? "active" : ""}}" href="{{route('finance-assets.list')}}"><i class="fas fa-coins"></i> <span class="menu-title">Assets</span></a></li>
         <li class="nav-item"><a class="nav-link {{$active == "finance-labels.list" ? "active" : ""}}" href="{{route('finance-labels.list')}}"><i class="fas fa-tags"></i> <span class="menu-title">Labels</span></a></li>
