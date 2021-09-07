@@ -87,6 +87,9 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
     function popUpWalletShown(e) {
         var $modal = $(this);
         $modal.find('#popup-wallet-form').on('submit', (e) => {
+            $loading = $(loading());
+            $modal.find('.modal-footer').prepend($loading);
+            $modal.find('button').prop("disabled",true);
             var formData = new FormData(e.target);
             $.ajax({
                 method: 'POST',
@@ -110,9 +113,19 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 }
+            }).always(() => {
+                $loading.remove();
+                $modal.find('button').prop("disabled",false);
             });
             e.preventDefault();
         });
+    }
+
+    function loading() {
+        var html = '<div class="spinner-border mr-3" role="status">'+
+            '<span class="sr-only">Loading...</span>'+
+        '</div>';
+        return html;
     }
 </script>
 @endpush
