@@ -26,7 +26,7 @@ class AlterTableFinanceMutationSchedulesModifyNominal extends Migration
     public function down()
     {
         Schema::table("finance_mutation_schedules",function(Blueprint $table){
-            $table->decimal("nominal",20,3)->change();
+            $table->float("nominal")->change();
         });
     }
 }
