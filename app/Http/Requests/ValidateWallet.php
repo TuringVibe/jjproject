@@ -40,7 +40,7 @@ class ValidateWallet extends FormRequest
             })],
             "name" => ["required","string","max:100"],
             "default_currency" => ["required","in:usd,cny,idr"],
-            "initial_balance" => ["nullable","integer"]
+            "initial_balance" => ["nullable","numeric"]
         ];
     }
 }

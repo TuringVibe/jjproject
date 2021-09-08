@@ -31,7 +31,7 @@ class FinanceMutationSchedule extends Model
         'from_wallet_id' => 'integer',
         'to_wallet_id' => 'integer',
         'next_mutation_date' => 'datetime:Y-m-d',
-        'nominal' => 'float',
+        'nominal' => 'decimal:65',
         'project_id' => 'integer',
         'attached_label_ids' => 'array',
         'created_by' => 'integer',

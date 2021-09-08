@@ -52,7 +52,7 @@ class ValidateFinanceMutationSchedule extends FormRequest
             'next_mutation_date' => ['required','date','after:today'],
             'name' => ['required','string','max:100'],
             'currency' => ['required','in:usd,cny,idr'],
-            'nominal' => ['required','integer'],
+            'nominal' => ['required','numeric'],
             'mode' => ['required','in:debit,credit,transfer'],
             'from_wallet_id' => ["bail","required_if:mode,transfer","nullable","integer",Rule::exists(Wallet::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
