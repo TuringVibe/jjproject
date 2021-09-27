@@ -140,7 +140,7 @@ $('#popup-user').on('shown.bs.modal', popUpUserShown);
         $modal.find('#popup-user-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#email').val(null);
-        $modal.find('#role').val(null);
+        $modal.find('#role option:first').prop("selected",true);
         $modal.find('#password').val(null);
         $modal.find('#password-confirmation').val(null);
         $modal.find('#firstname').val(null);

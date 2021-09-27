@@ -114,8 +114,8 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
         $modal.find('#id').val(null);
         $modal.find('#project_id').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#status').val(null);
-        $modal.find('#priority').val(null);
+        $modal.find('#status option:first').prop("selected",true);
+        $modal.find('#priority option:first').prop("selected",true);
         $modal.find('#milestone-id').val(null);
         $modal.find('#due-date').val(null);
         $modal.find('#description').val(null);

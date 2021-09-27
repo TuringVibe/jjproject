@@ -61,7 +61,7 @@ $('#popup-milestone').on('shown.bs.modal', popUpMilestoneShown);
         $modal.find('#popup-milestone-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#status').val(null);
+        $modal.find('#status option:first').prop("selected",true);
         $modal.find('#description').val(null);
         $modal.find('#cost').val(null);
         $modal.find('.is-invalid').removeClass('is-invalid');

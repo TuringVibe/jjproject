@@ -147,7 +147,7 @@
         $modal.find('#finance-asset-id').val(null);
         $modal.find('#change-datetime').val(null);
         $modal.find('#price-per-unit').val(null);
-        $modal.find('#currency').val(null);
+        $modal.find('#currency option:first').prop("selected",true);
         tableAssetPriceChange.destroy();
         $modal.find('.is-invalid').removeClass('is-invalid');
     }

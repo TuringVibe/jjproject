@@ -80,7 +80,7 @@ $('#popup-finance-asset').on('shown.bs.modal', popUpFinanceLabelShown);
         $modal.find('#qty').val(null);
         $modal.find('#unit').val(null);
         $modal.find('#buy-datetime').val(null);
-        $modal.find('#currency').val("usd");
+        $modal.find('#currency option:first').prop("selected",true);
         $modal.find('#buy-price-per-unit').val(null);
         $modal.find('.is-invalid').removeClass('is-invalid');
     }

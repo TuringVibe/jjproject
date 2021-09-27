@@ -107,7 +107,7 @@ $('.date-picker').daterangepicker({
         $modal.find('#popup-project-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#status').val(null);
+        $modal.find('#status option:first').prop("selected",true);
         $modal.find('#startdate').val(null);
         $modal.find('#enddate').val(null);
         $modal.find('#budget').val(null);

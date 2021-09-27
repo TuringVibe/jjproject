@@ -56,7 +56,7 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
         $modal.find('#popup-wallet-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#name').val(null);
-        $modal.find('#default-currency option:first').attr("selected","selected");
+        $modal.find('#default-currency option:first').prop("selected",true);
         $modal.find('#initial-balance').attr('readonly',false);
         $modal.find('#initial-balance').attr('disabled',false);
         $modal.find('#initial-balance').prev().text("Initial Balance");
