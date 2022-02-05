@@ -10,7 +10,7 @@ class Wallet extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name','default_currency'];
+    protected $fillable = ['name','default_currency','created_by','updated_by'];
 
     protected $hidden = [
         'deleted_at',

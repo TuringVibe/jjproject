@@ -10,7 +10,7 @@ class FinanceLabel extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name','color'];
+    protected $fillable = ['name','color','created_by','updated_by'];
     protected $hidden = [
         'deleted_at',
         'deleted_by'

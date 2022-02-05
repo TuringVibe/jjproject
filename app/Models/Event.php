@@ -14,7 +14,9 @@ class Event extends Model
         'startdatetime',
         'enddatetime',
         'name',
-        'repeat'
+        'repeat',
+        'created_by',
+        'updated_by'
     ];
     protected $hidden = [
         'deleted_at',

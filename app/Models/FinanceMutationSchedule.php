@@ -21,7 +21,9 @@ class FinanceMutationSchedule extends Model
         'project_id',
         'attached_label_ids',
         'repeat',
-        'notes'
+        'notes',
+        'created_by',
+        'updated_by'
     ];
     protected $hidden = [
         'deleted_at',
