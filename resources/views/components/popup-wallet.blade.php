@@ -60,6 +60,7 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
         $modal.find('#initial-balance').attr('readonly',false);
         $modal.find('#initial-balance').attr('disabled',false);
         $modal.find('#initial-balance').prev().text("Initial Balance");
+        $modal.find('#initial-balance').val(0);
         $modal.find('.is-invalid').removeClass('is-invalid');
     }
 
@@ -86,6 +87,7 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
 
     function popUpWalletShown(e) {
         var $modal = $(this);
+        $modal.find('#name').focus();
         $modal.find('#popup-wallet-form').on('submit', (e) => {
             $loading = $(loading());
             $modal.find('.modal-footer').prepend($loading);
