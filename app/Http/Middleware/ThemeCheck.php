@@ -43,7 +43,14 @@ class ThemeCheck
             $theme = session('theme');
             if(Auth::check() AND $theme['user_id'] == null) {
                 $user_id = Auth::user()->id;
-                $theme = ThemeUser::where('user_id',$user_id)->first()->theme;
+                $theme_user = ThemeUser::where('user_id',$user_id)->first();
+                if(!$theme_user) {
+                    $theme_user = ThemeUser::create([
+                        'user_id' => $user_id,
+                        'theme_id' => Theme::where('is_default',true)->first()->id
+                    ]);
+                }
+                $theme = $theme_user->theme;
                 session()->put('theme',[
                     'user_id' => $user_id,
                     'obj' => $theme
