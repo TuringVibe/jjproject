@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\FinanceLabel;
 use App\Models\Project;
+use App\Models\Wallet;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,10 +21,10 @@ class ValidateFinanceMutationParams extends FormRequest
     }
 
     public function prepareForValidation() {
-        $date_range = $this->date_range == null ? null : explode(' - ',$this->date_range);
         $this->merge([
-            'date_from' => $date_range == null ? null : trim(strip_tags($date_range[0])),
-            'date_to' => $date_range == null ? null : trim(strip_tags($date_range[1])),
+            'from_date' => $this->from_date == null ? null : trim(strip_tags($this->from_date)),
+            'to_date' => $this->to_date == null ? null : trim(strip_tags($this->to_date)),
+            'wallet_id' => $this->wallet_id == null ? null : trim(strip_tags($this->wallet_id)),
             'mode' => $this->mode == null ? null : trim(strip_tags($this->mode)),
             'label_id' => $this->label_id == null ? null : trim(strip_tags($this->label_id)),
             'project_id' => $this->project_id == null ? null : trim(strip_tags($this->project_id)),
@@ -41,12 +42,21 @@ class ValidateFinanceMutationParams extends FormRequest
     public function rules()
     {
         return [
-            'date_from' => ['nullable','date'],
-            'date_to' => ['nullable','date','after_or_equal:due_date_from'],
+            'from_date' => ['nullable','date'],
+            'to_date' => ['nullable','date','after_or_equal:from_date'],
+            'wallet_id' => ['nullable','integer',function($attribute, $value, $fail){
+                if($value != 0) {
+                    $label = Wallet::whereNull('deleted_at')->where('id',$value)->first();
+                    if(!$label) $fail("{$attribute} must be exists");
+                }
+            }],
             'mode' => ['nullable','in:debit,credit'],
-            'label_id' => ['nullable','integer',Rule::exists(FinanceLabel::class,'id')->where(function($query){
-                $query->whereNull('deleted_at');
-            })],
+            'label_id' => ['nullable','integer',function($attribute, $value, $fail){
+                if($value != 0) {
+                    $label = FinanceLabel::whereNull('deleted_at')->where('id',$value)->first();
+                    if(!$label) $fail("{$attribute} must be exists");
+                }
+            }],
             'project_id' => ['nullable','integer',function($attribute, $value, $fail){
                 if($value != 0) {
                     $project = Project::whereNull('deleted_at')->where('id',$value)->first();

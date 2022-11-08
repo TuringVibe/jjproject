@@ -33,7 +33,7 @@ class FinanceAsset extends Model
     ];
     protected $casts = [
         'qty' => 'decimal:15',
-        'buy_datetime' => 'datetime:Y-m-d H:i:s',
+        'buy_datetime' => 'datetime',
         'buy_price_per_unit' => 'decimal:15',
         'usd_cny' => 'decimal:15',
         'usd_idr' => 'decimal:15',
@@ -41,7 +41,7 @@ class FinanceAsset extends Model
         'cny_idr' => 'decimal:15',
         'idr_usd' => 'decimal:15',
         'idr_cny' => 'decimal:15',
-        'conversion_datetime' => 'datetime:Y-m-d H:i:s',
+        'conversion_datetime' => 'datetime',
         'created_by' => 'integer',
         'updated_by' => 'integer',
         'deleted_by' => 'integer'

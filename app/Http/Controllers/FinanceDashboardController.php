@@ -24,18 +24,17 @@ class FinanceDashboardController extends Controller {
                 'label' => 'Finance Dashboard'
             ]
         ];
-        $mutation_statistic = $this->finance_dashboard_service->mutationStatistic($request->currency ?? 'usd');
-        $asset_statistic = $this->finance_dashboard_service->assetStatistic($request->currency ?? 'usd');
-
-        $this->config['mutation_statistic'] = $mutation_statistic;
-        $this->config['asset_statistic'] = $asset_statistic;
+        $this->config['mutation_statistic'] = $this->finance_dashboard_service->mutationStatistic($request->currency ?? 'usd');
+        $this->config['asset_statistic'] = $this->finance_dashboard_service->assetStatistic($request->currency ?? 'usd');
         return view('pages.finance-dashboard', $this->config);
     }
 
     public function dataByLabel(ValidateFinanceDashboardLabelParams $request) {
         $params = $request->validated();
+        $currency = $params['currency'];
         unset($params['currency']);
-        $result = $this->finance_dashboard_service->mutationStatisticByLabel($request->currency ?? 'usd', $params);
+        if($params['name'] === null) unset($params['name']);
+        $result = $this->finance_dashboard_service->mutationStatisticByLabel($currency ?? 'usd', $params);
         return $result;
     }
 

@@ -13,7 +13,11 @@ class FinanceLabel extends Model
     protected $fillable = ['name','color','created_by','updated_by'];
     protected $hidden = [
         'deleted_at',
-        'deleted_by'
+        'deleted_by',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by'
     ];
     protected $casts = [
         'created_by' => 'integer',

@@ -1,6 +1,5 @@
 @push('head')
     <link rel="stylesheet" href="{{ asset('lib/bootstrap-colorpicker-3.2.0/css/bootstrap-colorpicker.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
 @endpush
 <div id="popup-project" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-project-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -34,12 +33,12 @@
                     <div class="form-row">
                         <div class="col-sm-4 form-group">
                             <label for="startdate">Start Date</label>
-                            <input type="text" id="startdate" name="startdate" class="date-picker form-control" aria-describedby="validate-startdate">
+                            <input type="date" id="startdate" name="startdate" class="form-control" aria-describedby="validate-startdate">
                             <div id="validate-startdate" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-4 form-group">
                             <label for="enddate">End Date</label>
-                            <input type="text" id="enddate" name="enddate" class="date-picker form-control" aria-describedby="validate-enddate">
+                            <input type="date" id="enddate" name="enddate" class="form-control" aria-describedby="validate-enddate">
                             <div id="validate-enddate" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-4 form-group">
@@ -90,17 +89,11 @@
 $('#popup-project').on('hide.bs.modal', popUpProjectHide);
 $('#popup-project').on('show.bs.modal', popUpProjectShow);
 $('#popup-project').on('shown.bs.modal', popUpProjectShown);
-$('.date-picker').daterangepicker({
-    singleDatePicker: true,
-    showDropdowns: true,
-    locale: {format: 'YYYY-MM-DD'}
-});
 @endpush
 
 @push('scripts')
 <script src="{{ asset('lib/bootstrap-colorpicker-3.2.0/js/bootstrap-colorpicker.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script>
     function popUpProjectHide(e) {
         var $modal = $(this);

@@ -6,7 +6,6 @@ use App\Http\Requests\ValidateTask;
 use App\Http\Requests\ValidateTaskId;
 use App\Http\Requests\ValidateTaskMove;
 use App\Http\Requests\ValidateTaskParams;
-use App\Models\File;
 use App\Models\Task;
 use App\Models\TaskComment;
 use App\Services\ProjectLabelService;
@@ -61,19 +60,20 @@ class TaskController extends Controller
 
     public function card(ValidateTaskId $request) {
         $result = $this->task_service->getCard($request->id);
-        $task = Task::find($result->id);
-        $result->can_update = $request->user()->can('update',$task);
-        $result->can_delete = $request->user()->can('delete',$task);
+        $result->description = html_entity_decode($result->description);
+        $result->can_update = $request->user()->can('update',$result);
+        $result->can_delete = $request->user()->can('delete',$result);
         $result->comments = $result->comments->map(function($item,$key) use($request){
             $task_comment = TaskComment::find($item['id']);
             $item['can_update'] = $request->user()->can('update',$task_comment);
             $item['can_delete'] = $request->user()->can('delete',$task_comment);
             return $item;
         });
-        $result->files = $result->files->map(function($item,$key) use($request, $task){
-            $item['can_delete'] = $request->user()->can('deleteFile',[$task, $item['id']]);
+        $result->files = $result->files->map(function($item,$key) use($request, $result){
+            $item['can_delete'] = $request->user()->can('deleteFile',[$result, $item['id']]);
             return $item;
         });
+
         return $result->toArray();
     }
 
@@ -81,12 +81,14 @@ class TaskController extends Controller
         $result = null;
         if($request->user()->can('update',Task::find($request->id))) {
             $result = $this->task_service->detail($request->id);
+            $result->description = html_entity_decode($result->description);
         }
         return $result;
     }
 
     public function detail(ValidateTaskId $request) {
         $task = $this->task_service->detail($request->id);
+        $task->description = html_entity_decode($task->description);
         $task->loadMissing('comments','files','subtasks');
         return $task;
     }

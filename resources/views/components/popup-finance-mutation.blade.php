@@ -1,6 +1,3 @@
-@push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
-@endpush
 <div id="popup-finance-mutation" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-finance-mutation-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -16,7 +13,7 @@
                     <div class="form-row">
                         <div class="col-sm-4 form-group">
                             <label for="mutation-date">Mutation Date <span class="text-danger">*</span></label>
-                            <input type="text" id="mutation-date" name="mutation_date" class="single-date-picker form-control" aria-describedby="validate-mutation_date">
+                            <input type="date" id="mutation-date" name="mutation_date" class="form-control" aria-describedby="validate-mutation_date">
                             <div id="validate-mutation_date" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-8 form-group">
@@ -108,8 +105,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script>
 
     function popUpFinanceMutationHide(e) {
@@ -148,7 +144,7 @@ $('#popup-finance-mutation').on('shown.bs.modal', popUpFinanceMutationShown);
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
                 $modal.find('#currency').val(res.currency);
-                $modal.find('#nominal').val(res.nominal);
+                $modal.find('#nominal').val(Intl.NumberFormat('en-US', {maximumFractionDigits: 2}).format(res.nominal));
                 $modal.find('#from-wallet').val(res.wallet_id).trigger('change');
                 $modal.find('#project-id').val(res.project_id).trigger('change');
                 $modal.find('#notes').val(res.notes);

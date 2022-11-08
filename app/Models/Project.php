@@ -26,8 +26,8 @@ class Project extends Model
         'deleted_by'
     ];
     protected $casts = [
-        'startdate' => 'datetime:Y-m-d',
-        'enddate' => 'datetime:Y-m-d',
+        'startdate' => 'datetime',
+        'enddate' => 'datetime',
         'budget' => 'integer',
         'created_by' => 'integer',
         'updated_by' => 'integer',

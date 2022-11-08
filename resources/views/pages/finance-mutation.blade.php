@@ -3,7 +3,6 @@
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
         .label-list {
@@ -23,7 +22,7 @@
                 'action' => 'openModal()'
             ]
         )
-        <div class="row mb-3">
+        <div id="scheduled-mutations" class="row mb-3">
             <div class="col">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -57,15 +56,29 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div id="finance-mutations" class="row">
             <div class="col">
                 <div class="card">
                     <h4 class="card-header">Finance Mutations</h4>
                     <div class="card-body">
                         <div class="form-row">
                             <div class="col-auto form-group">
-                                <label for="filter-date-range">Date Range</label>
-                                <input type="text" id="filter-date-range" class="date-picker form-control">
+                                <label for="filter-from-date">From</label>
+                                <input type="date" id="filter-from-date" class="form-control">
+                            </div>
+                            <div class="col-auto form-group">
+                                <label for="filter-to-date">To</label>
+                                <input type="date" id="filter-to-date" class="form-control">
+                            </div>
+                            <div class="col-auto form-group">
+                                <label for="filter-wallet">Wallet</label>
+                                <select id="filter-wallet" class="form-control">
+                                    <option value="">--All wallets --</option>
+                                    <option value="0">No wallet</option>
+                                    @foreach ($wallets as $wallet)
+                                        <option value="{{$wallet['id']}}">{{$wallet['name']}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-auto form-group">
                                 <label for="filter-mode">Mode</label>
@@ -78,7 +91,8 @@
                             <div class="col-auto form-group">
                                 <label for="filter-label">Label</label>
                                 <select id="filter-label" class="form-control">
-                                    <option value="">-- All labels -- </option>
+                                    <option value="">-- All labels --</option>
+                                    <option value="0">No label</option>
                                     @foreach ($labels as $label)
                                         <option value="{{$label['id']}}">{{$label['name']}}</option>
                                     @endforeach
@@ -134,8 +148,7 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+    <script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
     <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
     <script>
         function deleteData(elem) {
@@ -234,49 +247,8 @@
 @endpush
 
 @push('ready-scripts')
-    $('.date-picker').daterangepicker({
-        autoUpdateInput: false,
-        showDropdowns: true,
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        locale: {
-            format: 'YYYY-MM-DD',
-            cancelLabel: 'Clear'
-        },
-        ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-         }
-    });
-    $('.date-picker').on('apply.daterangepicker hide.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD')+' - '+picker.endDate.format('YYYY-MM-DD'));
-    });
-    $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
-
-    $('.single-date-picker').daterangepicker({
-        autoUpdateInput: false,
-        singleDatePicker: true,
-        showDropdowns: true,
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        locale: {
-            format: 'YYYY-MM-DD',
-            cancelLabel: 'Clear'
-        }
-    });
-    $('.single-date-picker').on('apply.daterangepicker hide.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD'));
-    });
-
-    $('.single-date-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
+    var walletId = getQueryVariable('wallet_id');
+    var labelId = getQueryVariable('label_id');
 
     $('#filter-next-button').on('click',(e) => {
         document.querySelector('#list-next').dispatchEvent(new CustomEvent('mutated'));
@@ -298,7 +270,12 @@
             }
         },
         columns: [
-            {data: 'next_mutation_date'},
+            {
+                data: 'next_mutation_date',
+                render: (data) => {
+                    return moment(data).format('LL');
+                }
+            },
             {data: 'name'},
             {
                 data: 'mode',
@@ -343,6 +320,17 @@
         if(e.key === "Enter") $('#filter-button').click();
     });
 
+    $('#list').on('preXhr.dt', function (e, settings, data) {
+        if(walletId !== false) {
+            document.querySelector('#filter-wallet').value = walletId;
+            data.wallet_id = walletId;
+        }
+        if(labelId !== false) {
+            document.querySelector('#filter-label').value = labelId;
+            data.label_id = labelId;
+        }
+    });
+
     var table = $('#list').DataTable({
         order: [],
         paging: false,
@@ -352,7 +340,9 @@
             url: '{{ route('finance-mutations.data') }}',
             dataSrc: '',
             data: function(d) {
-                d.date_range = $('#filter-date-range').val();
+                d.from_date = $('#filter-from-date').val();
+                d.to_date = $('#filter-to-date').val();
+                d.wallet_id = $('#filter-wallet').val();
                 d.mode = $('#filter-mode').val();
                 d.label_id = $('#filter-label').val();
                 d.project_id = $('#filter-project').val();
@@ -360,7 +350,12 @@
             }
         },
         columns: [
-            {data: 'mutation_date'},
+            {
+                data: 'mutation_date',
+                render: (data) => {
+                    return moment(data).format('LL');
+                }
+            },
             {data: 'name'},
             {
                 data: null,
@@ -371,42 +366,42 @@
             {
                 data: 'usd',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'debit') return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    if(row.mode == 'debit') return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     else return "";
                 }
             },
             {
                 data: 'cny',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'debit') return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    if(row.mode == 'debit') return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     else return "";
                 }
             },
             {
                 data: 'idr',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'debit') return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    if(row.mode == 'debit') return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     else return "";
                 }
             },
             {
                 data: 'usd',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'credit') return "&#36; "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
+                    if(row.mode == 'credit') return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format((data*-1));
                     else return "";
                 }
             },
             {
                 data: 'cny',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'credit') return "&yen; "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
+                    if(row.mode == 'credit') return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format((data*-1));
                     else return "";
                 }
             },
             {
                 data: 'idr',
                 render: (data,type,row,meta) => {
-                    if(row.mode == 'credit') return "Rp "+new Intl.NumberFormat().format(new Number(data*-1).toFixed(2));
+                    if(row.mode == 'credit') return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format((data*-1));
                     else return "";
                 }
             },
@@ -442,5 +437,12 @@
 
     $('#list').on('mutated', (e) => {
         table.ajax.reload();
+    });
+
+    $('#list').on('init.dt', (e) => {
+        if(walletId !== false || labelId !== false) {
+            const financeMutationContainerElem = document.getElementById('finance-mutations');
+            financeMutationContainerElem.scrollIntoView(true);
+        }
     });
 @endpush

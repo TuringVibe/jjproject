@@ -30,7 +30,7 @@ class ValidateTask extends FormRequest
             'status' => trim(strip_tags($this->status)),
             'priority' => trim(strip_tags($this->priority)),
             'order' => $this->order == null ? null : trim(strip_tags($this->order)),
-            'description' => $this->description == null ? null : trim(strip_tags($this->description)),
+            'description' => $this->description == null ? null : trim(htmlentities($this->description)),
             'due_date' => $this->due_date == null ? null : trim(strip_tags($this->due_date)),
             'user_ids.*' => $this->user_ids == null ? null : array_map(function($val){return trim(strip_tags($val));}, $this->user_ids)
         ]);

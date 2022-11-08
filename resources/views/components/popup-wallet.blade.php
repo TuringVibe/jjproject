@@ -79,7 +79,7 @@ $('#popup-wallet').on('shown.bs.modal', popUpWalletShown);
             $.get('{{route("wallets.detail")}}',{id:id}).done((res) => {
                 $modal.find('#id').val(res.id);
                 $modal.find('#name').val(res.name);
-                $modal.find('#initial-balance').val(res.total_balance);
+                $modal.find('#initial-balance').val(Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(res.total_balance));
                 $modal.find('#default-currency option[value="'+res.default_currency+'"]').prop("selected",true);
             });
         }

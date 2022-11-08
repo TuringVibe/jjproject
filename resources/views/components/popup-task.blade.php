@@ -1,5 +1,6 @@
 @push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
+<script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
+<link rel="stylesheet" href="{{asset('css/extend-ckeditor5.css')}}" />
 @endpush
 <div id="popup-task" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-task-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -52,13 +53,13 @@
                         </div>
                         <div class="col-sm-6 form-group">
                             <label for="due-date">Due Date</label>
-                            <input type="text" id="due-date" name="due_date" class="date-picker form-control" aria-describedby="validate-duedate">
+                            <input type="date" id="due-date" name="due_date" class="form-control" aria-describedby="validate-duedate">
                             <div id="validate-duedate" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea id="description" name="description" class="form-control" aria-describedby="validate-description"></textarea>
+                        <label for="description">Description<br/>(Press Space+Enter to add new line, press Enter to add new paragraph)</label>
+                        <div id="description" name="description" class="editor form-control" aria-describedby="validate-description"></div>
                         <div id="validate-description" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
@@ -84,32 +85,15 @@
 $('#popup-task').on('hide.bs.modal', popUpTaskHide);
 $('#popup-task').on('show.bs.modal', popUpTaskShow);
 $('#popup-task').on('shown.bs.modal', popUpTaskShown);
-$('.date-picker').daterangepicker({
-    autoUpdateInput: false,
-    singleDatePicker: true,
-    showDropdowns: true,
-    applyClass: "btn-default",
-    cancelClass: "btn-secondary",
-    locale: {
-        format: 'YYYY-MM-DD',
-        cancelLabel: 'Clear'
-    }
-});
-$('.date-picker').on('apply.daterangepicker hide.daterangepicker', function(ev, picker) {
-    $(this).val(picker.startDate.format('YYYY-MM-DD'));
-});
-
-$('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
-    $(this).val('');
-});
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script>
+    var classicEditor = null;
+
     function popUpTaskHide(e) {
-        var $modal = $(this);
+        const $modal = $(this);
         $modal.find('#popup-task-form').off('submit');
         $modal.find('#id').val(null);
         $modal.find('#project_id').val(null);
@@ -121,14 +105,26 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
         $modal.find('#description').val(null);
         $modal.find('#user-ids').val([]).trigger('change');
         $modal.find('.is-invalid').removeClass('is-invalid');
+        if(classicEditor) classicEditor.destroy();
     }
 
     function popUpTaskShow(e) {
-        var $modal = $(this);
+        ClassicEditor
+            .create( document.querySelector( '.editor' ), {
+                toolbar: ['heading', 'bold', 'italic', 'link', 'undo', 'redo', 'numberedList', 'bulletedList']
+            } )
+            .then(editor => {
+                classicEditor = editor;
+            })
+            .catch( error => {
+                console.error( error );
+            }
+        );
+        const $modal = $(this);
         $modal.find('#create-task-title').text('Create Task');
         $modal.find('#project_id').val(getQueryVariable('id'));
         if($modal.data('action') == 'edit') {
-            var id = $modal.data('id');
+            const id = $modal.data('id');
             $modal.find('#id').val(id);
             $modal.find('#create-task-title').text('Update Task');
             $.get('{{route("tasks.edit")}}',{id: id}).done((res) => {
@@ -137,8 +133,8 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
                 $modal.find('#priority').val(res.priority);
                 $modal.find('#milestone-id').val(res.milestone_id);
                 $modal.find('#due-date').val(res.due_date);
-                $modal.find('#description').val(res.description);
-                var user_ids = [];
+                if(classicEditor) classicEditor.setData(res.description);
+                const user_ids = [];
                 for(user of res.users) {
                     user_ids.push(user['id']);
                 }
@@ -148,11 +144,12 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
     }
 
     function popUpTaskShown(e) {
-        var $modal = $(this);
-        var status = $modal.find('#status').val();
-        var id = $modal.find('#id').val();
+        const $modal = $(this);
+        const status = $modal.find('#status').val();
+        const id = $modal.find('#id').val();
         $modal.find('#popup-task-form').on('submit', (e) => {
-            var formData = new FormData(e.target);
+            const formData = new FormData(e.target);
+            formData.set('description', classicEditor.getData());
             $.ajax({
                 method: 'POST',
                 url: '{{route("tasks.save")}}',
@@ -182,15 +179,15 @@ $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
                 }
             }).fail((jqXHR, textStatus, errorResponse) => {
                 if(jqXHR.status == 422) {
-                    var errors = jqXHR.responseJSON.errors;
+                    const errors = jqXHR.responseJSON.errors;
                     for(error in errors) {
                         $('#validate-'+error).text(errors[error]);
                         $('[name='+error+']').addClass('is-invalid');
                     }
                 } else {
-                    var response = jqXHR.responseJSON;
-                    var title = 'Failed!';
-                    var message = response.message ?? @json(__('response.server_error'));
+                    const response = jqXHR.responseJSON;
+                    const title = 'Failed!';
+                    const message = response.message ?? @json(__('response.server_error'));
                     switch(jqXHR.status) {
                         case 403: title = 'Not Authorized!'; break;
                         case 500: title = 'Server Error'; break;

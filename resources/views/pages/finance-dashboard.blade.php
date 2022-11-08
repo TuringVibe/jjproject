@@ -2,7 +2,6 @@
 
 @push('head')
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
         .label-list {
@@ -84,7 +83,7 @@
                         </div>
                         <div class="buy-price">Buy : {!! $statistic['currency'] !!} {{$statistic["buy_price"]}}</div>
                         <div class="last-price">Latest : {!! $statistic['currency'] !!} {{$statistic["latest_price"]}}</div>
-                        <div class="last-change">Last change : {{$statistic["latest_price_change_datetime"]}}</div>
+                        <div class="last-change">Last change : {{ $statistic["latest_price_change_datetime"] }}</div>
                     </div>
                 </div>
             </div>
@@ -98,8 +97,12 @@
                     <div class="card-body">
                         <div class="form-row">
                             <div class="form-group col-auto">
-                                <label for="date-range">Date Range</label>
-                                <input type="text" class="form-control date-picker" id="date-range" value="">
+                                <label for="date-from">From</label>
+                                <input type="date" class="form-control" id="date-from" value="">
+                            </div>
+                            <div class="form-group col-auto">
+                                <label for="date-to">To</label>
+                                <input type="date" class="form-control" id="date-to" value="">
                             </div>
                             <div class="form-group col-auto">
                                 <label for="periode">Periode</label>
@@ -110,6 +113,32 @@
                             </div>
                             <div class="form-group col-auto align-self-end">
                                 <button id="show" type="button" class="btn btn-default">Show</button>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Earn</h5>
+                                        <p id="mutation-total-earn" class="h5"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Debit</h5>
+                                        <p id="mutation-total-debit" class="h5"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Credit</h5>
+                                        <p id="mutation-total-credit" class="h5"></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -127,12 +156,16 @@
                     <div class="card-body">
                         <div class="form-row">
                             <div class="form-group col-auto">
-                                <label for="date-range">Date Range</label>
-                                <input type="text" class="form-control date-picker" id="date-range-asset" value="">
+                                <label for="asset-date-from">From</label>
+                                <input type="date" class="form-control" id="asset-date-from" value="">
                             </div>
                             <div class="form-group col-auto">
-                                <label for="periode">Periode</label>
-                                <select class="form-control" id="periode-asset">
+                                <label for="asset-date-to">To</label>
+                                <input type="date" class="form-control" id="asset-date-to" value="">
+                            </div>
+                            <div class="form-group col-auto">
+                                <label for="asset-periode">Periode</label>
+                                <select class="form-control" id="asset-periode">
                                     <option value="weekly">Weekly</option>
                                     <option value="monthly">Monthly</option>
                                 </select>
@@ -181,34 +214,28 @@
 @endsection
 
 @push('ready-scripts')
+    $('.last-change').each((index, elem) => {
+        let text = $(elem).text().split(' : ');
+        let lastChanged = moment(text[1]).format('LL LTS');
+        $(elem).text(text[0] + ' : ' + lastChanged);
+    });
     $('#currency-'+currency).prop("checked",true);
     $('[name=currency]').on('click',(e) => {
-        window.location.href = '?currency='+$(e.target).val();
-    });
+        const currency = $(e.target).val();
+        const dateFrom = $('#date-from').val();
+        const dateTo = $('#date-to').val();
+        const assetDateFrom = $('#asset-date-from').val();
+        const assetDateTo = $('#asset-date-to').val();
 
-    $('.date-picker').daterangepicker({
-        showDropdowns: true,
-        startDate: moment().startOf('year'),
-        endDate: moment(),
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        locale: {
-            format: 'YYYY-MM-DD',
-            cancelLabel: 'Clear'
-        },
-        ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Year From Now': [moment().subtract(1,'years'), moment()]
-        }
-    });
-    $('.date-picker').on('apply.daterangepicker hide.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD')+' - '+picker.endDate.format('YYYY-MM-DD'));
-    });
-    $('.date-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams({
+            currency: currency,
+            date_from: dateFrom,
+            date_to: dateTo,
+            asset_date_from: assetDateFrom,
+            asset_date_to: assetDateTo
+        }).toString();
+        window.location.href = url.origin + url.pathname + '?' + params;
     });
 
     $('#filter-name').on('keyup',(e) => { if(e.key == "Enter") $('#filter-button').click();});
@@ -241,39 +268,24 @@
             {
                 data: 'label',
                 render: (data,type,row,meta) => {
-                    return '<span class="label-list" style="background-color:'+data.color+'">'+data.name+'</span>';
+                    return '<span class="label-list" style="background-color:'+ (data.color ?? 'none') +'">'+data.name+'</span>';
                 }
             },
             {
                 data: 'debit',
                 render: (data,type,row,meta) => {
-                    var currencies = {
-                        'usd': '&#36;',
-                        'cny': '&yen;',
-                        'idr': 'Rp'
-                    };
                     return currencies[row.currency]+" "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
                 }
             },
             {
                 data: 'credit',
                 render: (data,type,row,meta) => {
-                    var currencies = {
-                        'usd': '&#36;',
-                        'cny': '&yen;',
-                        'idr': 'Rp'
-                    };
                     return currencies[row.currency]+" "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
                 }
             },
             {
                 data: 'total',
                 render: (data,type,row,meta) => {
-                    var currencies = {
-                        'usd': '&#36;',
-                        'cny': '&yen;',
-                        'idr': 'Rp'
-                    };
                     return currencies[row.currency]+" "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
                 }
             }
@@ -289,17 +301,33 @@
 @endpush
 
 @push('scripts')
-    <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+    <script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
     <script src="{{asset('lib/DataTables/datatables.min.js')}}"></script>
     <script src="{{asset('lib/chart.js-3.0.1/chart.min.js')}}"></script>
     <script>
+        var currencies = {
+            'usd': '&#36;',
+            'cny': '&yen;',
+            'idr': 'Rp'
+        };
+        const defaultDateFrom = moment().startOf('year').format('YYYY-MM-DD');
+        const defaultDateTo = moment().format('YYYY-MM-DD');
+        const initialDateFrom = getQueryVariable('date_from');
+        const initialDateTo = getQueryVariable('date_to');
+        const initialAssetDateFrom = getQueryVariable('asset_date_from');
+        const initialAssetDateTo = getQueryVariable('asset_date_to');
+
+        $('#date-from').val(initialDateFrom !== false ? initialDateFrom : defaultDateFrom);
+        $('#date-to').val(initialDateTo !== false ? initialDateTo : defaultDateTo);
+        $('#asset-date-from').val(initialAssetDateFrom !== false ? initialAssetDateFrom : defaultDateFrom);
+        $('#asset-date-to').val(initialAssetDateTo !== false ? initialAssetDateTo : defaultDateTo);
+
         var currency = getQueryVariable('currency');
         currency = currency == false ? 'usd' : currency;
 
         var chart = null;
         if($('#chart').length) {
-            var ctx = $('#chart');
+            const ctx = $('#chart');
             chart = new Chart(ctx,{
                 type: 'bar',
                 data: {
@@ -340,7 +368,7 @@
 
         var chartAsset = null;
         if($('#chart-asset').length) {
-            var ctxAsset = $('#chart-asset');
+            const ctxAsset = $('#chart-asset');
             chartAsset = new Chart(ctxAsset,{
                 type: 'line',
                 options: {
@@ -354,42 +382,62 @@
         }
 
         function updateChart() {
-            var dateRange = $('#date-range').val();
-            var periode = $('#periode').val();
+            const dateFrom = $('#date-from').val();
+            const dateTo = $('#date-to').val();
+            const periode = $('#periode').val();
+            const $mutationTotalEarn = $('#mutation-total-earn');
+            const $mutationTotalDebit = $('#mutation-total-debit');
+            const $mutationTotalCredit = $('#mutation-total-credit');
+
             $.get(@json(route("finance-dashboard.periodic-statistic")),{
                 currency: currency,
-                date_range: dateRange,
+                date_range: dateFrom + " - " + dateTo,
                 periode: periode
             }).done(function(res){
+                let totalEarn = 0;
+                let totalDebit = 0;
+                let totalCredit = 0;
+
                 chart.data.labels = [];
                 chart.data.datasets.forEach((dataset) => {
                     dataset.data = [];
                 });
+
                 for(data of res) {
                     chart.data.labels.push(data.label);
                     chart.data.datasets[0].data.push(data.total_earning);
                     chart.data.datasets[1].data.push(data.total_debit);
                     chart.data.datasets[2].data.push(data.total_credit);
+                    totalDebit += data.total_debit;
+                    totalCredit += data.total_credit;
                 }
+                totalCredit = totalCredit > 0 ? totalCredit * -1 : 0;
+                totalEarn = totalDebit + totalCredit;
+
+                $mutationTotalEarn.html(currencies[currency] + ' ' + Intl.NumberFormat("en-US", {maximumFractionDigits: 2}).format(totalEarn));
+                $mutationTotalDebit.html(currencies[currency] + ' ' + Intl.NumberFormat("en-US", {maximumFractionDigits: 2}).format(totalDebit));
+                $mutationTotalCredit.html(currencies[currency] + ' ' + Intl.NumberFormat("en-US", {maximumFractionDigits: 2}).format(totalCredit));
+
                 chart.update();
             });
         }
 
         function updateChartAsset() {
-            var dateRange = $('#date-range-asset').val();
-            var periode = $('#periode-asset').val();
+            const dateFrom = $('#asset-date-from').val();
+            const dateTo = $('#asset-date-to').val();
+            const periode = $('#asset-periode').val();
             $.get(@json(route("finance-dashboard.asset-periodic-statistic")),{
                 currency: currency,
-                date_range: dateRange,
+                date_range: dateFrom + " - " + dateTo,
                 periode: periode
             }).done(function(res){
                 chartAsset.data.labels = [];
                 chartAsset.data.datasets = [];
                 chartAsset.data.labels = res.labels;
                 for(idx in res.datasets) {
-                    var r = Math.floor(Math.random() * 255);
-                    var g = Math.floor(Math.random() * 255);
-                    var b = Math.floor(Math.random() * 255);
+                    const r = Math.floor(Math.random() * 255);
+                    const g = Math.floor(Math.random() * 255);
+                    const b = Math.floor(Math.random() * 255);
                     chartAsset.data.datasets.push(
                         {
                             label: res.datasets[idx],

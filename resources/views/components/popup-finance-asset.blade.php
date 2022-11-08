@@ -1,6 +1,3 @@
-@push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
-@endpush
 <div id="popup-finance-asset" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-finance-asset-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -33,7 +30,7 @@
                     <div class="form-row">
                         <div class="col-5 form-group">
                             <label for="buy-datetime">Buy Datetime <span class="text-danger">*</span></label>
-                            <input type="text" id="buy-datetime" name="buy_datetime" class="single-date-picker form-control" aria-describedby="validate-buy_datetime">
+                            <input type="datetime-local" id="buy-datetime" name="buy_datetime" class="form-control" aria-describedby="validate-buy_datetime">
                             <div id="validate-buy_datetime" class="invalid-feedback"></div>
                         </div>
                         <div class="col-5 form-group">
@@ -68,8 +65,7 @@ $('#popup-finance-asset').on('shown.bs.modal', popUpFinanceLabelShown);
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script>
     var colorpicker = null;
     function popUpFinanceLabelHide(e) {
@@ -88,21 +84,20 @@ $('#popup-finance-asset').on('shown.bs.modal', popUpFinanceLabelShown);
     function popUpFinanceLabelShow(e) {
         var $origin = $(e.relatedTarget);
         var $modal = $(this);
-        var now = moment().format('YYYY-MM-DD HH:mm:ss');
+        var now = moment().format('YYYY-MM-DD hh:mm:ss A');
         $modal.find('#create-finance-asset-title').text('Create Finance Asset');
         $modal.find('#buy-datetime').val(now);
-        $modal.find('#buy-datetime').data('daterangepicker').setStartDate(now);
         if($origin.data('action') == 'edit') {
             var id = $origin.data('id');
             $modal.find('#create-finance-asset-title').text('Update Finance Asset');
             $.get('{{route("finance-assets.edit")}}',{id:id}).done((res) => {
                 $modal.find('#id').val(res.id);
                 $modal.find('#name').val(res.name);
-                $modal.find('#qty').val(res.qty);
+                $modal.find('#qty').val(Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(res.qty));
                 $modal.find('#unit').val(res.unit);
-                $modal.find('#buy-datetime').val(res.buy_datetime);
+                $modal.find('#buy-datetime').val(moment(res.buy_datetime).format('YYYY-MM-DD hh:mm:ss A'));
                 $modal.find('#currency').val(res.currency);
-                $modal.find('#buy-price-per-unit').val(res.buy_price_per_unit);
+                $modal.find('#buy-price-per-unit').val(Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(res.buy_price_per_unit));
             });
         }
     }
@@ -121,6 +116,7 @@ $('#popup-finance-asset').on('shown.bs.modal', popUpFinanceLabelShown);
             $modal.find('.modal-footer').prepend($loading);
             $modal.find('button').prop("disabled",true);
             var formData = new FormData(e.target);
+            formData.set('buy_datetime',moment(formData.get('buy_datetime')).utc().format('YYYY-MM-DD HH:mm:ss'));
             $.ajax({
                 method: 'POST',
                 url: '{{route("finance-assets.save")}}',

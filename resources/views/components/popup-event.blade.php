@@ -1,6 +1,3 @@
-@push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
-@endpush
 <div id="popup-event" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-event-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -17,13 +14,13 @@
                         <div class="col-6 form-group">
                             <label for="startdatetime">Start Datetime <span class="text-danger">*</span></label>
                             <p id="p-startdatetime"></p>
-                            <input type="text" id="startdatetime" name="startdatetime" class="single-date-picker form-control" aria-describedby="validate-startdatetime">
-                            <div id="validate-startdatetime" class="invalid-feedback"><<.,.</div>
+                            <input type="datetime-local" id="startdatetime" name="startdatetime" class="form-control" aria-describedby="validate-startdatetime">
+                            <div id="validate-startdatetime" class="invalid-feedback"></div>
                         </div>
                         <div class="col-6 form-group">
                             <label for="enddatetime">End Datetime <span class="text-danger">*</span></label>
                             <p id="p-enddatetime"></p>
-                            <input type="text" id="enddatetime" name="enddatetime" class="single-date-picker form-control" aria-describedby="validate-enddatetime">
+                            <input type="datetime-local" id="enddatetime" name="enddatetime" class="form-control" aria-describedby="validate-enddatetime">
                             <div id="validate-enddatetime" class="invalid-feedback"></div>
                         </div>
                     </div>
@@ -61,33 +58,11 @@
 @push('ready-scripts')
     $('#popup-event').on('hide.bs.modal', popUpEventHide);
     $('#popup-event').on('show.bs.modal', popUpEventShow);
-
-    $('.single-date-picker').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD HH:mm:ss'));
-    });
-
-    $('.single-date-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
 @endpush
 
 @push('scripts')
 <script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
-    var drpOptions = {
-        singleDatePicker: true,
-        timePicker: true,
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        timePicker24Hour: true,
-        timePickerSeconds: true,
-        locale: {
-            cancelLabel: 'Clear',
-            format: 'YYYY-MM-DD HH:mm:ss'
-        }
-    };
-
     function deleteEvent() {
         Swal.fire({
             title: 'Are you sure ?',
@@ -172,9 +147,8 @@
         var id = $modal.data('id');
         $.get('{{route("events.edit")}}',{id: id}).done((res) => {
             $modal.find('#id').val(res.id);
-            $modal.find('#startdatetime').val(moment.utc(res.startdatetime).format('YYYY-MM-DD HH:mm:ss'));
-            $modal.find('#enddatetime').val(moment.utc(res.enddatetime).format('YYYY-MM-DD HH:mm:ss'));
-            $('.single-date-picker').daterangepicker(drpOptions);
+            $modal.find('#startdatetime').val(moment(res.startdatetime).format('YYYY-MM-DD hh:mm:ss A'));
+            $modal.find('#enddatetime').val(moment(res.enddatetime).format('YYYY-MM-DD hh:mm:ss A'));
             $modal.find('#name').val(res.name);
             $modal.find('#repeat').val(res.repeat);
         });
@@ -212,8 +186,8 @@
             var id = $modal.data('id');
             $.get('{{route("events.edit")}}',{id: id}).done((res) => {
                 $modal.find('#id').val(res.id);
-                $modal.find('#p-startdatetime').text(moment.utc(res.startdatetime).format('YYYY-MM-DD HH:mm:ss'));
-                $modal.find('#p-enddatetime').text(moment.utc(res.enddatetime).format('YYYY-MM-DD HH:mm:ss'));
+                $modal.find('#p-startdatetime').text(moment(res.startdatetime).format('LL LTS'));
+                $modal.find('#p-enddatetime').text(moment(res.enddatetime).format('LL LTS'));
                 $modal.find('#p-name').text(res.name);
                 $modal.find('#p-repeat').text(res.repeat);
             });
@@ -236,13 +210,13 @@
             $modal.find('#popup-event-form').on('submit', (e) => {
                 submitForm(e.target,$modal);
             });
-            $('.single-date-picker').daterangepicker(drpOptions);
         }
     }
 
     function submitForm(form, $modal) {
-        console.log(form, $modal)
         var formData = new FormData(form);
+        formData.set('startdatetime', moment(formData.get('startdatetime')).utc().format('YYYY-MM-DD HH:mm:ss'));
+        formData.set('enddatetime', moment(formData.get('enddatetime')).utc().format('YYYY-MM-DD HH:mm:ss'));
         $.ajax({
             method: 'POST',
             url: '{{route("events.save")}}',

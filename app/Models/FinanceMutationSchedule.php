@@ -32,7 +32,7 @@ class FinanceMutationSchedule extends Model
     protected $casts = [
         'from_wallet_id' => 'integer',
         'to_wallet_id' => 'integer',
-        'next_mutation_date' => 'datetime:Y-m-d',
+        'next_mutation_date' => 'datetime',
         'nominal' => 'decimal:65',
         'project_id' => 'integer',
         'attached_label_ids' => 'array',

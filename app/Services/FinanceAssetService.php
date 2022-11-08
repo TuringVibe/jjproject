@@ -37,7 +37,7 @@ class FinanceAssetService {
                 'name' => $finance_asset->name,
                 'qty' => $finance_asset->qty,
                 'unit' => $finance_asset->unit,
-                'buy_datetime' => Carbon::parse($finance_asset->buy_datetime)->format('Y-m-d H:i:s'),
+                'buy_datetime' => $finance_asset->buy_datetime,
                 'usd_unit' => $finance_asset->buy_price_per_unit * $convert_to_usd,
                 'usd_total' => $finance_asset->buy_price_per_unit * $finance_asset->qty * $convert_to_usd,
                 'cny_unit' => $finance_asset->buy_price_per_unit * $convert_to_cny,

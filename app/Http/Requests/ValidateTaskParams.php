@@ -21,12 +21,9 @@ class ValidateTaskParams extends FormRequest
     }
 
     public function prepareForValidation() {
-        $due_dates = $this->due_date_range == null ? null : explode(' - ',$this->due_date_range);
         $this->merge([
             'project_id' => $this->project_id == null ? null : trim(strip_tags($this->project_id)),
             'project_label_id' => $this->project_label_id == null ? null : trim(strip_tags($this->project_label_id)),
-            'due_date_from' => $due_dates == null ? null : trim(strip_tags($due_dates[0])),
-            'due_date_to' => $due_dates == null ? null : trim(strip_tags($due_dates[1])),
             'user_id' => $this->user_id == null ? null : trim(strip_tags($this->user_id)),
             'status' => $this->status == null ? null : array_map(function($val){return trim(strip_tags($val));},$this->status),
             'priority' => $this->priority == null ? null : trim(strip_tags($this->priority)),
@@ -48,8 +45,7 @@ class ValidateTaskParams extends FormRequest
             'project_label_id' => ['nullable','integer',Rule::exists(ProjectLabel::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],
-            'due_date_from' => ['nullable','date'],
-            'due_date_to' => ['nullable','date','after_or_equal:due_date_from'],
+            'due_date' => ['nullable','date'],
             'user_id' => ['nullable','integer',Rule::exists(User::class,'id')->where(function($query){
                 $query->whereNull('deleted_at');
             })],

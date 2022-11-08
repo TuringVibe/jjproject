@@ -3,9 +3,13 @@
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('lib/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
+        .user-img-cont {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
         .user-img {
             display: inline-flex;
             justify-content: center;
@@ -21,10 +25,6 @@
             background-color: var(--com-bg-color-default);
             background-size: cover;
             background-position: center;
-        }
-
-        .user-img:not(:first-child) {
-            margin-left: -10px;
         }
 
         .label-list {
@@ -71,8 +71,8 @@
                         </select>
                     </div>
                     <div class="col-auto form-group">
-                        <label for="filter-duedate-range">Due Date Range</label>
-                        <input id="filter-duedate-range" class="form-control">
+                        <label for="filter-duedate">Due Date</label>
+                        <input type="date" id="filter-duedate" class="form-control">
                     </div>
                     @can('viewAny', App\Models\Task::class)
                         <div class="col-auto form-group">
@@ -139,8 +139,7 @@
 
 @push('scripts')
     <script src="{{ asset('lib/DataTables/datatables.min.js') }}"></script>
-    <script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-    <script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+    <script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
     <script>
         function deleteData(elem) {
             Swal.fire({
@@ -201,36 +200,6 @@
         if(e.key === "Enter") $('#filter-button').click();
     });
 
-    var start = moment().subtract(29, 'days');
-    var end = moment();
-
-    $('input#filter-duedate-range').daterangepicker({
-        autoUpdateInput: false,
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        locale: {
-            cancelLabel: 'Clear'
-        },
-        startDate: start,
-        endDate: end,
-        ranges: {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-            'This Month': [moment().startOf('month'), moment().endOf('month')],
-            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-        }
-    });
-
-    $('input#filter-duedate-range').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
-    });
-
-    $('input#filter-duedate-range').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
-
     var table = $('#list').DataTable({
         order: [],
         paging: false,
@@ -242,7 +211,7 @@
         data: function(d) {
             d.project_id = $('#filter-project').val();
             d.project_label_id = $('#filter-project-label').val();
-            d.due_date_range = $('#filter-duedate-range').val();
+            d.due_date = $('#filter-duedate').val();
             d.user_id = $('#filter-user').val();
             d.status = [];
             $('[name="status[]"]:checked').each(function() {
@@ -268,19 +237,27 @@
             {
                 data: null,
                 render: (data, type, row, meta) => {
-                    var html = '';
+                    console.log(data,type,row,meta)
+                    let html = '<div class="user-img-cont">';
                     for(user of row.users) {
-                        var img_url = '/storage/'+user.img_path;
-                        var firstnameInitial = user.firstname.charAt(0);
-                        var lastnameInitial = user.lastname !== null ? user.lastname.charAt(0) : '';
-                        var nameInitial = user.img_path !== null ? '' : firstnameInitial+lastnameInitial;
-                        var imgPath = user.img_path !== null ? 'style="background-image: url(\''+img_url+'\')"' : '';
+                        const img_url = '/storage/'+user.img_path;
+                        const firstnameInitial = user.firstname.charAt(0);
+                        const lastnameInitial = user.lastname !== null ? user.lastname.charAt(0) : '';
+                        const nameInitial = user.img_path !== null ? '' : firstnameInitial+lastnameInitial;
+                        const imgPath = user.img_path !== null ? 'style="background-image: url(\''+img_url+'\')"' : '';
                         html += '<span class="user-img" '+imgPath+'>'+nameInitial+'</span>';
                     }
+                    html += '</div>';
                     return html;
                 }
             },
-            {data: 'due_date'},
+            {
+                data: 'due_date',
+                render: (data) => {
+                    if(data) return moment(data).format('LL');
+                    else return '-';
+                }
+            },
             {data: 'status'}
         ]
     });

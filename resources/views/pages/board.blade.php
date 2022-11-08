@@ -4,6 +4,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/content.css') }}">
     <style>
+        .content {
+            display: flex;
+            flex-direction: column;
+        }
         .user-img {
             display: inline-flex;
             justify-content: center;
@@ -38,6 +42,7 @@
 
         .board {
             width: auto;
+            flex-grow: 1;
             display: flex;
             flex-direction: row;
             justify-content: space-between;
@@ -45,6 +50,7 @@
         }
 
         .task-container {
+            height:calc(100% - 2.5rem);
             box-sizing: border-box;
             width: 33%;
             min-width: 358px;
@@ -68,11 +74,12 @@
         }
 
         .task-list {
-            height: auto;
             padding: .5rem;
             min-height: 75px;
+            max-height: 100%;
             border-radius: 5px;
             background-color: var(--task-list-bg-color);
+            overflow-y:auto;
         }
 
         .task-card {
@@ -199,10 +206,10 @@
 @section('content')
     <div class="content container-fluid">
         @include('components.content-header',[
-        'with_btn' => true,
-        'btn_label' => 'Create Task',
-        'action' => 'openModal()'
-        ]
+                'with_btn' => true,
+                'btn_label' => 'Create Task',
+                'action' => 'openModal()'
+            ]
         )
         <div class="board">
             <div class="task-container">
@@ -293,8 +300,7 @@
                     $card.find('.task-total-comments').html(res.comments_count + ' <i class="far fa-comment"></i>');
                     $card.find('.task-total-files').html(res.files_count + ' <i class="fas fa-paperclip"></i>');
                     $card.find('.task-priority').removeClass('low medium high').addClass(res.priority);
-                    $card.find('.task-duedate').text((res.due_date == null ? "" : "Due by " + moment(res.due_date)
-                        .format('D MMM YYYY')));
+                    $card.find('.task-duedate').text((res.due_date == null ? "" : "Due by " + moment(res.due_date).format('LL')));
                     $card.find('.edit').css("display", res.can_update ? "block" : "none");
                     $card.find('.delete').css("display", res.can_delete ? "block" : "none");
                     if(res.can_update == false && res.can_delete == false)
@@ -401,7 +407,7 @@
                 '</div>' +
                 '<div class="task-footer">' +
                 '<span class="task-priority ' + priority + '"></span>' +
-                '<span class="task-duedate">' + (dueDate == null ? "" : "Due by " + moment(dueDate).format('D MMM YYYY')) +
+                '<span class="task-duedate">' + (dueDate == null ? "" : "Due by " + moment(dueDate).format('LL')) +
                 '</span>' +
                 '</div>' +
                 '</div>';
@@ -469,6 +475,10 @@
             e.originalEvent.dataTransfer.dropEffect = "move";
             e.preventDefault();
         }
+    }).on('dragleave',(e) => {
+        if(e.target.classList.contains('task-list')) {
+            $('.placeholder').remove();
+        }
     }).on('dragenter',function(e){
         e.preventDefault();
         $placeholder = $('<div class="placeholder"></div>');
@@ -504,12 +514,13 @@
         if($(e.target).has('.task-card')) {
             $(e.target).css('opacity','1');
         }
+        $('.placeholder').remove();
     }).on('drop',function(e) {
         e.preventDefault();
-        var src = JSON.parse(e.originalEvent.dataTransfer.getData('text'));
         $placeholder = $(this).find('.placeholder');
         var destOrder = $placeholder.data('dest-order');
         var destStatus = $placeholder.data('dest-status');
+        var src = JSON.parse(e.originalEvent.dataTransfer.getData('text'));
         if(destOrder != $dragged.data('order') || destStatus != $dragged.data('status')) {
             saveTaskCard(src.id,destStatus,destOrder).then((res) => {
                 document.querySelector('.board').dispatchEvent(new CustomEvent('list-mutated'))

@@ -95,17 +95,25 @@ class FinanceMutationService {
                     case 'name':
                         $query_builder->where($field,'like',"%{$val}%");
                     break;
-                    case 'date_from':
+                    case 'wallet_id':
+                        if($val == "0") $query_builder->where('wallet_id', null);
+                        else $query_builder->where('wallet_id', $val);
+                    break;
+                    case 'from_date':
                         $query_builder->where('mutation_date','>=',$val);
                     break;
-                    case 'date_to':
+                    case 'to_date':
                         $query_builder->where('mutation_date','<=',$val);
                     break;
                     case 'label_id':
-                        $query_builder->whereHas('labels', function(Builder $query) use($val){
-                            $query->where('finance_labels.id',$val)
-                                ->whereNull('finance_labels.deleted_at');
-                        });
+                        if($val == 0) {
+                            $query_builder->doesntHave('labels');
+                        } else {
+                            $query_builder->whereHas('labels', function(Builder $query) use($val){
+                                $query->where('finance_labels.id',$val)
+                                    ->whereNull('finance_labels.deleted_at');
+                            });
+                        }
                     break;
                     case 'project_id':
                         if($val == "0") $query_builder->where('project_id', null);
@@ -125,7 +133,7 @@ class FinanceMutationService {
             $convert_to_idr = $mutation->{$mutation->currency."_idr"} ?? 1;
             $finance_mutations->push([
                 'id' => $mutation->id,
-                'mutation_date' => Carbon::parse($mutation->mutation_date)->format('Y-m-d'),
+                'mutation_date' => $mutation->mutation_date,
                 'name' => $mutation->name,
                 'wallet' => $mutation->wallet,
                 'usd' => $mutation->nominal * $convert_to_usd,

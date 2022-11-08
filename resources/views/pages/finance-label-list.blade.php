@@ -126,7 +126,10 @@
             {
                 data: 'name',
                 render: (data, type, row, meta) => {
-                    return '<span class="label-list" style="background-color:'+row.color+'">'+data+'</span>';
+                    const params = new URLSearchParams({
+                        label_id: row.id
+                    }).toString();
+                    return '<a href="{{ route('finance-mutations.list') }}?'+params+'" class="label-list" style="background-color:'+row.color+'">'+data+'</a>';
                 }
             },
             {data: 'mutations_count'},

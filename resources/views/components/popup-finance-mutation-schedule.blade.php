@@ -1,6 +1,3 @@
-@push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
-@endpush
 <div id="popup-finance-mutation-schedule" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="create-finance-mutation-schedule-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -16,7 +13,7 @@
                     <div class="form-row">
                         <div class="col-sm-3 form-group">
                             <label for="mutation-date">Next Date <span class="text-danger">*</span></label>
-                            <input type="text" id="next-mutation-date" name="next_mutation_date" class="single-date-picker form-control" aria-describedby="validate-next_mutation_date">
+                            <input type="date" id="next-mutation-date" name="next_mutation_date" class="form-control" aria-describedby="validate-next_mutation_date">
                             <div id="validate-next_mutation_date" class="invalid-feedback"></div>
                         </div>
                         <div class="col-sm-3 form-group">
@@ -118,8 +115,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script>
     function modeChanged($modal, mode) {
         var sourceOfFundElem = $modal.find("#source-of-fund");
@@ -169,7 +165,7 @@ $('#popup-finance-mutation-schedule').on('shown.bs.modal', popUpFinanceMutationS
                 $modal.find('#currency').val(res.currency);
                 $modal.find('#name').val(res.name);
                 $modal.find('#mode').val(res.mode);
-                $modal.find('#nominal').val(res.nominal);
+                $modal.find('#nominal').val(Intl.NumberFormat('en-US',{maximumFractionDigits: 2}).format(res.nominal));
                 $modal.find('#from-wallet').val(res.from_wallet_id).trigger('change');
                 if($res.mode == "transfer") $modal.find('#to-wallet').val(res.to_wallet_id).trigger('change');
                 $modal.find('#scheduled-project-id').val(res.project_id).trigger('change');

@@ -34,7 +34,7 @@ class FinanceMutation extends Model
         'deleted_by'
     ];
     protected $casts = [
-        'mutation_date' => 'datetime:Y-m-d',
+        'mutation_date' => 'datetime',
         'nominal' => 'decimal:65',
         'usd_cny' => 'decimal:40',
         'usd_idr' => 'decimal:40',

@@ -97,8 +97,8 @@ class ProjectController extends Controller
         $this->config['active'] = "projects.list";
         $result = $this->project_service->detail($request->id)->toArray();
         $this->config['detail'] = $result;
-        $this->config['detail']['startdate'] = Carbon::parse($result['startdate'])->format('d F Y');
-        $this->config['detail']['enddate'] = Carbon::parse($result['enddate'])->format('d F Y');
+        $this->config['detail']['startdate'] = Carbon::parse($result['startdate'])->format('F d, Y');
+        $this->config['detail']['enddate'] = Carbon::parse($result['enddate'])->format('F d, Y');
         $this->config['detail']['days_left'] = Carbon::now()->diffInDays($result['enddate']);
         $this->config['tasks_statistic'] = $this->task_service->statistic($request->id);
         $this->config['navs'] = [

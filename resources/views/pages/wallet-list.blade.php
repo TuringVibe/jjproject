@@ -126,7 +126,15 @@
             }
         },
         columns: [
-            {data: 'name'},
+            {
+                data: 'name',
+                render: (data, type, row, meta) => {
+                    const params = new URLSearchParams({
+                        wallet_id: row.id
+                    }).toString();
+                    return '<a href="{{ route("finance-mutations.list") }}?'+params+'">'+data+'</a>';
+                }
+            },
             {
                 data: 'default_currency',
                 render: (data) => {

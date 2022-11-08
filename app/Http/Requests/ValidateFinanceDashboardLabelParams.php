@@ -19,7 +19,7 @@ class ValidateFinanceDashboardLabelParams extends FormRequest
     public function prepareForValidation() {
         $this->merge([
             'currency' => $this->currency == null ? null : trim(strip_tags($this->currency)),
-            'name' => $this->name == null ? null : trim(strip_tags($this->name))
+            'name' => $this->name == null || trim(strip_tags($this->name)) === "" ? null : trim(strip_tags($this->name))
         ]);
     }
 

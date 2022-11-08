@@ -49,7 +49,7 @@ class FinanceDashboardService {
                 'name' => $asset->name,
                 'buy_price' => number_format($buy_price,2),
                 'latest_price' =>  number_format($latest_price,2),
-                'latest_price_change_datetime' => $latest_price_change_datetime->format('d M Y, H:i'),
+                'latest_price_change_datetime' => $latest_price_change_datetime->toW3cString(),
                 'percentage' => number_format(($latest_price - $buy_price)/$buy_price * 100,2)
             ];
         }
@@ -251,6 +251,25 @@ class FinanceDashboardService {
                 'total' => $debit+$credit
             ];
         }
+
+        if(empty($params)) {
+            //no-label mutations
+            $no_label_debit = FinanceMutation::doesntHave('labels')->totalDebit($currency);
+            $no_label_credit = FinanceMutation::doesntHave('labels')->totalCredit($currency);
+            $no_label_total = $no_label_debit+$no_label_credit;
+            $data[] = [
+                'label' => [
+                    'id' => null,
+                    'name' => 'No Label',
+                    'color' => null
+                ],
+                'currency' => $currency,
+                'debit' => $no_label_debit,
+                'credit' => $no_label_credit,
+                'total' => $no_label_total
+            ];
+        }
+
         return $data;
     }
 

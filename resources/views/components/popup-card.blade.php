@@ -34,6 +34,7 @@
             width: 4rem;
             height: 4rem;
             margin-right: 10px;
+            flex-shrink: 0;
         }
         .comment .comment-info {
             flex-grow: 1;
@@ -240,7 +241,7 @@ $('.add-subtask').on('click',addSubtask);
 @endpush
 
 @push('scripts')
-<script src="{{ asset('lib/daterangepicker-3.1/moment.min.js') }}"></script>
+<script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('js/tasks/subtask.js') }}"></script>
 <script src="{{ asset('js/tasks/comment.js') }}"></script>
 <script src="{{ asset('js/tasks/file.js') }}"></script>
@@ -288,10 +289,11 @@ $('.add-subtask').on('click',addSubtask);
         $.get('{{route("tasks.card")}}',{id: id}).done((res) => {
             $modal.find('#task_id').val(res.id);
             $modal.find('#task-card-title').text(res.name);
-            $modal.find('#created-date').text(moment(res.created_at).format('DD MMM YYYY'));
-            $modal.find('#due-date').text(res.due_date == null ? "-" : moment(res.due_date).format('DD MMM YYYY'));
+            $modal.find('#created-date').text(moment(res.created_at).format('LL'));
+            $modal.find('#due-date').text(res.due_date == null ? "-" : moment(res.due_date).format('LL'));
             $modal.find('#priority').addClass(res.priority);
-            $modal.find('#description').text(res.description ?? "-");
+            const description = $.parseHTML(res.description ?? "-");
+            $modal.find('#description').append(description);
             $modal.find('#milestone').text(res.milestone == null ? "-" : res.milestone.name);
             if(res != null) {
                 for(user of res.users) {

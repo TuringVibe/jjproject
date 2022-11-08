@@ -150,28 +150,6 @@
     $('#filter-name').on('keyup',(e) => {
         if(e.key === "Enter") $('#filter-button').click();
     });
-    $('.single-date-picker').daterangepicker({
-        autoUpdateInput: false,
-        drops: 'auto',
-        singleDatePicker: true,
-        showDropdowns: true,
-        applyClass: "btn-default",
-        cancelClass: "btn-secondary",
-        timePicker: true,
-        timePicker24Hour: true,
-        timePickerSeconds: true,
-        locale: {
-            format: 'YYYY-MM-DD HH:mm:ss',
-            cancelLabel: 'Clear'
-        }
-    });
-    $('.single-date-picker').on('apply.daterangepicker hide.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD HH:mm:ss'));
-    });
-
-    $('.single-date-picker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-    });
     var table = $('#list').DataTable({
         order: [],
         paging: false,
@@ -189,45 +167,50 @@
             {
                 data: 'qty',
                 render: (data) => {
-                    return new Intl.NumberFormat().format(data);
+                    return Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {data: 'unit'},
-            {data: 'buy_datetime'},
+            {
+                data: 'buy_datetime',
+                render: (data) => {
+                    return moment(data).format('LL LTS');
+                }
+            },
             {
                 data: 'usd_unit',
                 render: (data,type,row,meta) => {
-                    return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
                 data: 'usd_total',
                 render: (data,type,row,meta) => {
-                    return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
                 data: 'cny_unit',
                 render: (data,type,row,meta) => {
-                    return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
                 data: 'cny_total',
                 render: (data,type,row,meta) => {
-                    return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
                 data: 'idr_unit',
                 render: (data,type,row,meta) => {
-                    return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
                 data: 'idr_total',
                 render: (data,type,row,meta) => {
-                    return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                    return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                 }
             },
             {
@@ -253,12 +236,12 @@
                     total_idr_total += item.idr_total;
                 }
 
-                $(row).find('th:eq(1)').html("&#36; "+new Intl.NumberFormat().format(new Number(total_usd_unit).toFixed(2)));
-                $(row).find('th:eq(2)').html("&#36; "+new Intl.NumberFormat().format(new Number(total_usd_total).toFixed(2)));
-                $(row).find('th:eq(3)').html("&yen; "+new Intl.NumberFormat().format(new Number(total_cny_unit).toFixed(2)));
-                $(row).find('th:eq(4)').html("&yen; "+new Intl.NumberFormat().format(new Number(total_cny_total).toFixed(2)));
-                $(row).find('th:eq(5)').html("Rp "+new Intl.NumberFormat().format(new Number(total_idr_unit).toFixed(2)));
-                $(row).find('th:eq(6)').html("Rp "+new Intl.NumberFormat().format(new Number(total_idr_total).toFixed(2)));
+                $(row).find('th:eq(1)').html("&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_usd_unit));
+                $(row).find('th:eq(2)').html("&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_usd_total));
+                $(row).find('th:eq(3)').html("&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_cny_unit));
+                $(row).find('th:eq(4)').html("&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_cny_total));
+                $(row).find('th:eq(5)').html("Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_idr_unit));
+                $(row).find('th:eq(6)').html("Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(total_idr_total));
             }
         }
     });

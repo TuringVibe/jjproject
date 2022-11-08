@@ -29,7 +29,7 @@ class AssetPriceChangeService {
             $convert_to_idr = $asset_price_change->{$asset_price_change->currency."_idr"} ?? 1;
             $asset_price_changes->push([
                 'id' => $asset_price_change->id,
-                'change_datetime' => Carbon::parse($asset_price_change->change_datetime)->format('Y-m-d H:i:s'),
+                'change_datetime' => $asset_price_change->change_datetime,
                 'usd_unit' => $asset_price_change->price_per_unit * $convert_to_usd,
                 'usd_total' => $asset_price_change->price_per_unit * $asset_price_change->finance_asset->qty * $convert_to_usd,
                 'cny_unit' => $asset_price_change->price_per_unit * $convert_to_cny,

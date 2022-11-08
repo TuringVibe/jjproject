@@ -1,6 +1,3 @@
-@push('head')
-    <link rel="stylesheet" href="{{ asset('lib/daterangepicker-3.1/daterangepicker.css') }}">
-@endpush
 <div id="popup-asset-price-change" class="modal fade" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="asset-price-change-title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -16,7 +13,7 @@
                     <div class="form-row">
                         <div class="col-12 col-sm-4 form-group">
                             <label for="change-datetime">Change Datetime <span class="text-danger">*</span></label>
-                            <input type="text" id="change-datetime" name="change_datetime" class="single-date-picker form-control" aria-describedby="validate-change_datetime">
+                            <input type="datetime-local" id="change-datetime" name="change_datetime" class="form-control" aria-describedby="validate-change_datetime">
                             <div id="validate-change_datetime" class="invalid-feedback"></div>
                         </div>
                         <div class="col-9 col-sm-4 form-group">
@@ -77,7 +74,6 @@
 
 @push('scripts')
 <script src="{{ asset('lib/moment-with-locales.min.js') }}"></script>
-<script src="{{ asset('lib/daterangepicker-3.1/daterangepicker.js') }}"></script>
 <script>
     var tableAssetPriceChange = null;
     function deletePriceChange(elem) {
@@ -181,41 +177,46 @@
                 }
             },
             columns: [
-                {data: 'change_datetime'},
+                {
+                    data: 'change_datetime',
+                    render: (data) => {
+                        return moment(data).format('LL LTS');
+                    }
+                },
                 {
                     data: 'usd_unit',
                     render: (data,type,row,meta) => {
-                        return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
                     data: 'usd_total',
                     render: (data,type,row,meta) => {
-                        return "&#36; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "&#36; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
                     data: 'cny_unit',
                     render: (data,type,row,meta) => {
-                        return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
                     data: 'cny_total',
                     render: (data,type,row,meta) => {
-                        return "&yen; "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "&yen; "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
                     data: 'idr_unit',
                     render: (data,type,row,meta) => {
-                        return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
                     data: 'idr_total',
                     render: (data,type,row,meta) => {
-                        return "Rp "+new Intl.NumberFormat().format(new Number(data).toFixed(2));
+                        return "Rp "+Intl.NumberFormat("en-US",{maximumFractionDigits: 2}).format(data);
                     }
                 },
                 {
@@ -237,6 +238,7 @@
             $modal.find('form').after($loading);
             $modal.find('button').prop("disabled",true);
             var formData = new FormData(e.target);
+            formData.set('change_datetime', moment(formData.get('change_datetime')).utc().format('YYYY-MM-DD HH:mm:ss'));
             $.ajax({
                 method: 'POST',
                 url: @json(route("finance-assets.price-changes.save")),
